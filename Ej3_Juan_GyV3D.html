@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Click it!</title>
+</head>
+
+<body onload="init()">
+    <canvas id="myCanvas" width="1200" height="900"></canvas>
+</body>
+
+<script id="shaderVs" type="x-shader/x-vertex">
+    attribute vec4 a_Position;
+    attribute float pointSize;
+    
+    void main() {
+        gl_Position = a_Position;
+        gl_PointSize = pointSize;
+    }
+</script>
+
+<script id="shaderFs" type="x-shader/x-fragment">
+    precision mediump float; //Precission for gpu
+    uniform vec4 u_FragColor;
+    void main() {
+        gl_FragColor = u_FragColor;
+    }
+</script>
+
+<script>
+  
+function init() {
+    // Get canvas object from the DOM
+    var canvas = document.getElementById("myCanvas");
+    // Get the rendering context for WebGL
+    var gl = canvas.getContext("webgl");
+    if (!gl) {
+        console.log("Failed to get the rendering context for WebGL");
+    return;
+    }
+
+    //Initialize the shader
+    var vs = document.getElementById('shaderVs').innerHTML;
+    var fs = document.getElementById('shaderFs').innerHTML;
+    if(!initShaders(gl, vs, fs)){
+        console.log("Failed to oinitialize shaders");
+        return;
+    }
+
+    //Get all the variables from webGL
+    //Position
+    var a_Position = gl.getAttribLocation(gl.program, "a_Position");
+    if (a_Position < 0){
+        console.log("Failed to get a_Position");
+        return;
+    }
+
+    //Size of the point
+    var pointSize = gl.getAttribLocation(gl.program, "pointSize");
+    if (pointSize < 0){
+        console.log("Failed to get pointSize");
+        return;
+    }
+
+    //Color of the point
+    var u_FragColor = gl.getUniformLocation(gl.program, "u_FragColor");
+    if (!u_FragColor){
+        console.log("Failed to get u_FragColor");
+        return;
+    }
+
+    //Click function
+    canvas.onmousedown = function(ev){
+        click(ev, gl, canvas, a_Position, u_FragColor, pointSize);
+    };
+
+    //Set black canvas
+    gl.clearColor(0.0, 0.0, 0.0, 1.0);
+
+    // Clear canvas
+    gl.clear(gl.COLOR_BUFFER_BIT);
+
+  
+}
+//Global arrays of points, colors and sizes
+var points = []; 
+var colors = [];
+var sizes = [];
+
+function click(ev, gl, canvas, a_Position, u_FragColor, pointSize){
+    //Coordinates of canvas origin
+    var rect = ev.target.getBoundingClientRect();
+
+    //Relative x coordinate of click in canvas
+    var clickX = ev.clientX - rect.left;
+
+    //Relative x coordinate of click in canvas
+    var clickY = ev.clientY - rect.top; 
+
+    //WebGl coordinates (3D)
+    var halfCanvasWidth = canvas.width / 2;
+    var halfCanvasHeight = canvas.height / 2;
+    var x = (clickX - halfCanvasWidth) / halfCanvasWidth;
+    var y = (halfCanvasHeight - clickY) / halfCanvasHeight;
+       
+
+    //Store x,y at array
+    points.push([x,y]);
+
+    //Distance and size calculations
+    var distance = Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2));
+    var size = Math.abs(20 * distance);
+
+    //Store size at array
+    sizes.push(size);
+    console.log(distance)
+
+    //Set up the expression for the switch
+    var paintWhite;
+    if (distance >= 0.7){
+        paintWhite = true;
+
+    }else if (distance < 0.7){
+        paintWhite = false;
+    }
+
+    switch (paintWhite){
+        case true:
+            colors.push([1.0, 1.0, 1.0, 1.0]);
+            break;
+
+        case false:
+            if (x <= 0.0){//left side
+                if(y >= 0.0){//1.red
+                    colors.push([1.0, 0.0, 0.0, 1.0]);
+                }else{//4.blue
+                    colors.push([0.0, 0.0, 1.0, 1.0]);
+                }
+            }else if (x > 0.0){//rigth side
+                if(y <= 0.0){//3.yellow
+                    colors.push([1.0, 1.0, 0.0, 1.0]);
+                }else{//2.green
+                    colors.push([0.0, 1.0, 0.0, 1.0]);
+                }
+            }   
+            break;
+
+        default:
+            alert("Some kind of error?");
+            break;
+    }
+
+    //Clear canvas
+    gl.clear(gl.COLOR_BUFFER_BIT);
+
+    //Going through the arrays and passing info
+    var length = points.length;
+    for(var i = 0; i < length; i++){
+        var position = points[i];
+        var color = colors[i];
+        var size = sizes[i];
+
+        //Give to a_Position the position of that particular point 
+        //3 Attribs posX and posY
+        gl.vertexAttrib3f(a_Position, position[0], position[1], 0.0);
+
+        //Same but for sizes
+        //1 Attribs only size
+        gl.vertexAttrib1f(pointSize, size);
+
+        //Same as above but for the 4 possible colors
+        gl.uniform4f(u_FragColor, color[0], color[1], color[2], color[3]);
+
+        //dibujear
+        gl.drawArrays(gl.POINTS, 0, 1);
+
+    }
+    
+}
+
+//Shader stuff.....
+    function initShaders(gl, vs_source, fs_source) {
+        // Compile shaders
+        var vertexShader = makeShader(gl, vs_source, gl.VERTEX_SHADER);
+        var fragmentShader = makeShader(gl, fs_source, gl.FRAGMENT_SHADER);
+
+        // Create program
+        var glProgram = gl.createProgram();
+
+        // Attach and link shaders to the program
+        gl.attachShader(glProgram, vertexShader);
+        gl.attachShader(glProgram, fragmentShader);
+        gl.linkProgram(glProgram);
+        if (!gl.getProgramParameter(glProgram, gl.LINK_STATUS)) {
+            alert("Unable to initialize the shader program");
+            return false;
+        }
+
+        // Use program
+        gl.useProgram(glProgram);
+        gl.program = glProgram;
+
+        return true;
+    }
+
+    function makeShader(gl, src, type) {
+        var shader = gl.createShader(type);
+        gl.shaderSource(shader, src);
+        gl.compileShader(shader);
+        if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+            alert("Error compiling shader: " + gl.getShaderInfoLog(shader));
+            return;
+        }
+        return shader;
+    }
+
+</script>
+</html>

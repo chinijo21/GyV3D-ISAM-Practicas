@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Ej4 - </title>
+</head>
+
+<body onload="init()">
+    <canvas id="myCanvas" width="640" height="480"></canvas>
+    <br>
+    Step: <input type="text" id="step" value="0.01">
+</body>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gl-matrix/2.8.1/gl-matrix-min.js"></script>
+
+<script id="shaderVs" type="x-shader/x-vertex">
+    attribute vec4 a_Position;
+    uniform mat4 u_Matrix;
+    void main() {
+        gl_Position =u_Matrix * a_Position;
+
+    }
+</script>
+
+<script id="shaderFs" type="x-shader/x-fragment">
+    precision mediump float;
+    uniform vec4 u_FragColor;
+    void main() {
+        gl_FragColor = u_FragColor;
+    }
+</script>
+
+<script>
+    var a = 0.0;
+    var b = 0.0;
+    var x = 0.0;
+    var y = 0.0;
+    var scaled = 1.0;
+    var rotate = 0.0;
+
+    function init() {
+
+        // Get canvas object from the DOM
+        var canvas = document.getElementById("myCanvas");
+
+        // Init WebGL context
+        var gl = canvas.getContext("webgl");
+        if (!gl) {
+            console.log("Failed to get the rendering context for WebGL");
+            return;
+        }
+
+        // Init shaders
+        var vs = document.getElementById('shaderVs').innerHTML;
+        var fs = document.getElementById('shaderFs').innerHTML;
+        if (!initShaders(gl, vs, fs)) {
+            console.log('Failed to intialize shaders.');
+            return;
+        }
+
+        // Write the positions of vertices to a vertex shader
+        var n = initVertexBuffers(gl);
+        if (n < 0) {
+            console.log('Failed to set the positions of the vertices');
+            return;
+        }
+
+        // Clear canvas
+        gl.clearColor(0.0, 0.0, 0.0, 1.0);
+        
+        transformsIt(gl);
+
+        document.onkeydown = function (ev) {
+            var step = new Number(document.getElementById("step").value);
+            switch (ev.keyCode) {
+                case 37: // to the left
+                    x -= step;
+                    break;
+
+                case 39: // to the right
+                    x += step;
+                    break;
+
+                case 38: // going up
+                    y += step;
+                    break;
+
+                case 40: // depression
+                    y -= step;
+                    break;
+
+                case 33: // bigger
+                    scaled += step;
+                    break;
+
+                case 34: // smaler
+                    scaled -= step;
+                    break;
+
+                case 36: // Travis Pastrana x-Games 2000 backflip
+                    rotate += step;
+                    break;
+
+                case 35: // Frontflip
+                    rotate -= step;
+                    break;
+                case 187: //come close to me bb
+                    a -= step;
+                    b += step;
+                    break;
+                
+                case 189: //iugh quita bicho
+                    a += step;
+                    b -= step;
+                    break;
+            }
+            transformsIt(gl);
+        };
+    
+    }
+    
+    function transformsIt(gl){
+        gl.clear(gl.COLOR_BUFFER_BIT);
+        //First it creates a matrix for every movement, then we multiply them using multiply
+        //first scale and traslation and then with rotation so we get the complete set of
+        //movements
+        //Single operations
+        var rotation = mat4.fromZRotation(mat4.create(), rotate);
+        var scaling = mat4.fromScaling(mat4.create(), [scaled, scaled, 0.0]);
+        var translation = mat4.fromTranslation(mat4.create(), [x, y, 0.0]);
+        var moveMecloserPos = mat4.fromTranslation(mat4.create(), [a, 0.0, 0.0]);
+        var moveMecloserNeg = mat4.fromTranslation(mat4.create(), [b, 0.0, 0.0]);
+
+        //Matrix multiplication
+        var scaled_translation = mat4.multiply(mat4.create(), translation, scaling);
+        var allMovements = mat4.multiply(mat4.create(), scaled_translation, rotation);
+
+        //Differs for moving them closer to X
+        var allMovsPos = mat4.multiply(mat4.create(), allMovements, moveMecloserPos);
+        var allMovsNeg = mat4.multiply(mat4.create(), allMovements, moveMecloserNeg);
+
+        var movementMatrix = gl.getUniformLocation(gl.program, "u_Matrix");
+
+        //Pass movements for the positive rectangle
+        gl.uniformMatrix4fv(movementMatrix, false, allMovsPos);
+        //Draw from vertice 0 to 6 (first rectangle) +
+        gl.drawArrays(gl.TRIANGLES, 0, 6);
+        
+        //Pass movements for the second one
+        gl.uniformMatrix4fv(movementMatrix, false, allMovsNeg);
+        //Draw from vertice 6 to 12 (second rectangle) -
+        gl.drawArrays(gl.TRIANGLES, 6, 6);
+    }
+
+    function initVertexBuffers(gl) {
+        // Vertices
+        var dim = 2; 
+        var vertices1 = new Float32Array([
+        0.1, 0.5, 0.5, 0.5, 0.5, -0.5, // Triangle 1
+        0.1, 0.5, 0.5, -0.5, 0.1, -0.5, // Triangle 2 
+        -0.1, 0.5, -0.5, -0.5, -0.1, -0.5, // Triangle 3
+        -0.1, 0.5, -0.5, 0.5, -0.5, -0.5 // Triangle 4
+         //1 + 2 = first square
+         //3 + 4 = second square   
+        ]);
+        
+        //Green fragment color
+        var color = [0.0, 1.0, 0.0, 1.0];
+
+        // Create a buffer object
+        var vertexBuffer = gl.createBuffer();
+        if (!vertexBuffer) {
+            console.log('Failed to create the buffer object');
+            return -1;
+        }
+        gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
+        gl.bufferData(gl.ARRAY_BUFFER, vertices1, gl.STATIC_DRAW);
+
+        // Assign the vertices in buffer object to a_Position variable
+        var a_Position = gl.getAttribLocation(gl.program, 'a_Position');
+        if (a_Position < 0) {
+            console.log('Failed to get the storage location of a_Position');
+            return -1;
+        }
+        gl.vertexAttribPointer(a_Position, dim, gl.FLOAT, false, 0, 0);
+        gl.enableVertexAttribArray(a_Position);
+
+        // Assign the color to u_FragColor variable
+        var u_FragColor = gl.getUniformLocation(gl.program, 'u_FragColor');
+        if (u_FragColor < 0) {
+            console.log('Failed to get the storage location of u_FragColor');
+            return -1;
+        }
+        gl.uniform4fv(u_FragColor, color);
+        
+
+        // Return number of vertices
+        return vertices1.length / dim;
+    }
+
+
+
+    function initShaders(gl, vs_source, fs_source) {
+        // Compile shaders
+        var vertexShader = makeShader(gl, vs_source, gl.VERTEX_SHADER);
+        var fragmentShader = makeShader(gl, fs_source, gl.FRAGMENT_SHADER);
+
+        // Create program
+        var glProgram = gl.createProgram();
+
+        // Attach and link shaders to the program
+        gl.attachShader(glProgram, vertexShader);
+        gl.attachShader(glProgram, fragmentShader);
+        gl.linkProgram(glProgram);
+        if (!gl.getProgramParameter(glProgram, gl.LINK_STATUS)) {
+            alert("Unable to initialize the shader program");
+            return false;
+        }
+
+        // Use program
+        gl.useProgram(glProgram);
+        gl.program = glProgram;
+
+        return true;
+    }
+
+    function makeShader(gl, src, type) {
+        var shader = gl.createShader(type);
+        gl.shaderSource(shader, src);
+        gl.compileShader(shader);
+        if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+            alert("Error compiling shader: " + gl.getShaderInfoLog(shader));
+            return;
+        }
+        return shader;
+    }
+</script>
+
+</html>
