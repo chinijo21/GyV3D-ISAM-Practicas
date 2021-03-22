@@ -78,10 +78,16 @@
             // Clear
             gl.clear(gl.COLOR_BUFFER_BIT);
 
-            // Rotate
-            var mvMatrix = mat4.fromRotation(mat4.create(), count, [0.5, 0.5, 0.5]);
-            var uMvMatrix = gl.getUniformLocation(gl.program, "u_mvMatrix");
-            gl.uniformMatrix4fv(uMvMatrix, false, mvMatrix);
+            //Lookup if rotation is checked
+            var rotationCheck = document.querySelector('input[name="rotation"]:checked');
+
+            //If rotation is checked the fig will rotate on his Y axis
+            if(rotationCheck){
+                var mvMatrix = mat4.fromYRotation(mat4.create(), count);
+                var uMvMatrix = gl.getUniformLocation(gl.program, "u_mvMatrix");
+                gl.uniformMatrix4fv(uMvMatrix, false, mvMatrix);
+            }
+
 
             // Draw
             gl.drawElements(gl.TRIANGLES, 6 * 2 * 3, gl.UNSIGNED_SHORT, 0);
