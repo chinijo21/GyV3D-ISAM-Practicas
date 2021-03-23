@@ -41,6 +41,7 @@
 
     <script>
         var gl;
+        var z = -3; //Default value for z
         var count = 0.0;
 
         function init() {
@@ -191,6 +192,22 @@
 		}
 
         function initProjection(gl, canvas) {
+            //Check what projection is checked by the user
+            var projecCheck = document.querySelector('input[name="projection"]:checked').value;
+            var pMatrix;
+            var vMatrix;
+            switch (projecCheck){
+                case 'perspective':
+                    break;
+
+                case 'orthographic':
+                    break;
+            }
+            //Mouse wheel
+            document.addEventListener('wheel', function (event) {     
+                z = event.wheelDelta > 0 ? z + 1 : z - 1; 
+            });
+
             // Write u_pMatrix
             var pMatrixUniform = gl.getUniformLocation(gl.program, "u_pMatrix");
             var ratio = canvas.width / canvas.height;
@@ -199,7 +216,7 @@
 
             // Write u_vMatrix
             var vMatrixUniform = gl.getUniformLocation(gl.program, "u_vMatrix");
-            var vMatrix = mat4.lookAt(mat4.create(), [0, 0, 3], [0, 0, 0], [0, 1, 0]); //Calculates view matrix
+            var vMatrix = mat4.lookAt(mat4.create(), [0, 0, z], [0, 0, 0], [0, 1, 0]); //Calculates view matrix
             gl.uniformMatrix4fv(vMatrixUniform, false, vMatrix);
         }
 
