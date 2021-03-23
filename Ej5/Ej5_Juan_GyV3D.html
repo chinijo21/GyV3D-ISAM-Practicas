@@ -92,6 +92,7 @@
                 var mvMatrix = mat4.fromYRotation(mat4.create(), count);
                 var uMvMatrix = gl.getUniformLocation(gl.program, "u_mvMatrix");
                 gl.uniformMatrix4fv(uMvMatrix, false, mvMatrix);
+                count += 0.01; //count here so when we uncheck 'rotation' count stops and starts in the same place
             }
 
             // What primitive is checked by the user?
@@ -108,7 +109,6 @@
             }
             
             // Call drawScene again in the next browser repaint
-            count += 0.01;
             requestAnimationFrame(drawScene);
         }
 
