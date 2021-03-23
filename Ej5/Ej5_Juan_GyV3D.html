@@ -43,10 +43,11 @@
         var gl;
         var z = -3; //Default value for z
         var count = 0.0;
+        var canvas;
 
         function init() {
             // Get canvas object from the DOM
-            var canvas = document.getElementById("myCanvas");
+            canvas = document.getElementById("myCanvas");
 
             // Init WebGL context
             gl = canvas.getContext("webgl");
@@ -108,7 +109,7 @@
                     gl.drawElements(gl.TRIANGLES, 6 * 2 * 3, gl.UNSIGNED_SHORT, 0);
                     break;
             }
-            
+            initProjection(gl, canvas);
             // Call drawScene again in the next browser repaint
             requestAnimationFrame(drawScene);
         }
