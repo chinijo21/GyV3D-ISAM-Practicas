@@ -7,5 +7,6 @@ Practicas 2020-2021
 - [*Ejercicio 4*](https://chinijo21.github.io/GyV3D-ISAM-Practicas/Ej4/Ej4_Juan_GyV3D.html) : two rectangles that moves depending of the keyboard input, movements speed are determined by *steps*. Translation, rotation and other movements using glMatrix.
 
 
-- [*Ejercicio 5*](https://chinijo21.github.io/GyV3D-ISAM-Practicas/Ej5/Ej5_Juan_GyV3D.html) : **WIP** 
+- [*Ejercicio 5*](https://chinijo21.github.io/GyV3D-ISAM-Practicas/Ej5/Ej5_Juan_GyV3D.html) : A *inverted pyramid* that rotates on the Y axis. The user can choose to stop the rotation, the type of projection (**orthogonal or perspective**) or how they want to draw the pyramid using *triangles* or *lines*. With the mouse wheel while using the *perspective view* view the pyramid is zoomed in or out.
+
 
