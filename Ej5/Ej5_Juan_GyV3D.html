@@ -106,11 +106,11 @@
             switch(primitiveCheck){
                 case 'lines':   //Lines?
                     //Draw as lines
-                    gl.drawElements(gl.LINES, 4 * 1 * 3, gl.UNSIGNED_SHORT, 0);
+                    gl.drawElements(gl.LINES, 4 * 1 * 6, gl.UNSIGNED_SHORT, 0); // 4 faces, each one with 3 triangles and 3 vertex each
                     break;
                 
                 case 'triangles': //WebGL actually did build pyramids
-                    gl.drawElements(gl.TRIANGLES, 4 * 1 * 3, gl.UNSIGNED_SHORT, 0);
+                    gl.drawElements(gl.TRIANGLES, 4 * 1 * 6, gl.UNSIGNED_SHORT, 0);
                     break;
                 
                 default:
@@ -125,32 +125,35 @@
         function initVertexShader(gl) {
             // Vertexes and colors  (X, Y, Z, R, G, B)
             var vertexesAndColors = [
-                0.0,  -1.0,  0.0,    1, 1, 0, //v0 pico
+                0.0,  -1.0,  0.0,   1, 1, 0, //v0 pico
                 -0.5, -0.5, 0.5,    1, 1, 0, //v1
                 0.5, -0.5,  0.5,    1, 1, 0, //v2
                 // Right face
-                0.0,  -1.0,  0.0,    0, 0, 1, //v3 pico
+                0.0,  -1.0,  0.0,   0, 0, 1, //v3 pico
                 0.5, -0.5,  0.5,    0, 0, 1, //v4
                 0.5, -0.5, -0.5,    0, 0, 1, //v5
                 // Back face
-                0.0,  -1.0,  0.0,    0, 1, 1, //v6 pico 
+                0.0,  -1.0,  0.0,   0, 1, 1, //v6 pico 
                 0.5, -0.5, -0.5,    0, 1, 1, // v7
                 -0.5, -0.5, -0.5,   0, 1, 1, // v8
                 // Left face
-                0.0,  -1.0,  0.0,    1, 0, 0, //v9 pico 
+                0.0,  -1.0,  0.0,   1, 0, 0, //v9 pico 
                 -0.5, -0.5, -0.5,   1, 0, 0, //v10 
-                -0.5, -0.5,  0.5,   1, 0, 0 //v11
+                -0.5, -0.5,  0.5,   1, 0, 0, //v11
+
+
             ];
 
             // Indexes (for drawing squares using triangles)
             var indexes = [
-                0, 1, 2,
+                0, 1, 2, 1, 0, 2,
          
-                3, 4, 5,
+                3, 4, 5, 4, 3, 5, 
 
-                6, 7, 8,
+                6, 7, 8, 7, 8, 6,
 
-                9, 10, 11
+                9, 11, 10, 9, 11, 10
+
             ];
 
             // Write a_Position and a_Color using gl.ARRAY_BUFFER
