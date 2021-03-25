@@ -75,7 +75,7 @@
 
             // Draw Scene
             drawScene();
-            //Captures mouse-wheel movements, makes the object come closer or moves it away
+            //Captures mouse-wheel movements, makes the object come closer or moves it away, only when we are in perspective mode
             document.addEventListener('wheel', function (event) {
                 z = event.wheelDelta > 0 ? z + 1 : z - 1;
             });
@@ -126,40 +126,40 @@
             // Vertexes and colors  (X, Y, Z, R, G, B)
             var vertexesAndColors = [
                 //Yellow face traingle
-                0.0,  -1.0,  0.0,    1, 1, 0,  //v0 pico
-                -0.5, -0.5, 0.5,     1, 1, 0,  //v1
-                0.5, -0.5,  0.5,     1, 1, 0,  //v2
+                0.0,  -1.0,  0.0,    1, 1, 0,       //v0 pico
+                -0.5, -0.5, 0.5,     1, 1, 0,       //v1
+                0.5, -0.5,  0.5,     1, 1, 0,       //v2
 
                 //Blue face bby triangle
-                0.0,  -1.0,  0.0,    0, 0, 1,  //v3 pico
-                0.5, -0.5,  0.5,     0, 0, 1,  //v4
-                0.5, -0.5, -0.5,     0, 0, 1,  //v5
+                0.0,  -1.0,  0.0,    0, 0, 1,       //v3 pico
+                0.5, -0.5,  0.5,     0, 0, 1,       //v4
+                0.5, -0.5, -0.5,     0, 0, 1,       //v5
 
-                // turquoise face triangle
-                 0.0,  -1.0,  0.0,   0, 1, 1,  //v6 pico 
-                 0.5, -0.5, -0.5,    0, 1, 1,  // v7
-                -0.5, -0.5, -0.5,    0, 1, 1,  // v8
+                //Pink face triangle 
+                 0.0,  -1.0,  0.0,   1, 0.25, 0.8,  //v6 pico 
+                 0.5, -0.5, -0.5,    1, 0.25, 0.8,  // v7
+                -0.5, -0.5, -0.5,    1, 0.25, 0.8,  // v8
 
                 // Red face triangle
-                 0.0,  -1.0,  0.0,   1, 0, 0,  //v9 pico 
-                -0.5, -0.5, -0.5,    1, 0, 0,  //v10 
-                -0.5, -0.5,  0.5,    1, 0, 0,  //v11
+                 0.0,  -1.0,  0.0,   1, 0, 0,       //v9 pico 
+                -0.5, -0.5, -0.5,    1, 0, 0,       //v10 
+                -0.5, -0.5,  0.5,    1, 0, 0,       //v11
 
                 //Yellow square 
-                -0.5, -0.1,  0.5,    1, 1, 0,  //v12
-                0.5, -0.1,  0.5,     1, 1, 0,  //v13
+                -0.5, -0.1,  0.5,    1, 1, 0,       //v12
+                0.5, -0.1,  0.5,     1, 1, 0,       //v13
 
                 //Blue square 
-                0.5, -0.1,  0.5,     0, 0, 1,  //v14
-                0.5, -0.1, -0.5,     0, 0, 1,  //v15
+                0.5, -0.1,  0.5,     0, 0, 1,       //v14
+                0.5, -0.1, -0.5,     0, 0, 1,       //v15
 
-                //Turqoise square
-                0.5,  -0.1,  -0.5,   0, 1, 1, //v16
-                -0.5, -0.1,  -0.5,   0, 1, 1, //v17
+                //Pink square
+                0.5,  -0.1,  -0.5,   1, 0.25, 0.8,  //v16
+                -0.5, -0.1,  -0.5,   1, 0.25, 0.8,  //v17
 
                 //Red square 
-                -0.5, -0.1, -0.5,    1, 0, 0,  //18
-                -0.5, -0.1,  0.5,    1, 0, 0   //19
+                -0.5, -0.1, -0.5,    1, 0, 0,       //18
+                -0.5, -0.1,  0.5,    1, 0, 0        //19
             ];
 
             // Indexes (for drawing squares using triangles)
