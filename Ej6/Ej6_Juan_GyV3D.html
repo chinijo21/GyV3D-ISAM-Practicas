@@ -2,7 +2,10 @@
 <html>
 
 <head>
-    <title>WebGL textures: cube</title>
+    <title>Ej6 cubo texturizado y movs</title>
+    <body onload="init()">
+        <canvas id="myCanvas" width="640" height="480"></canvas>
+    </body>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gl-matrix/2.8.1/gl-matrix-min.js"></script>
 
@@ -23,11 +26,14 @@
 
     <script id="shaderFs" type="x-shader/x-fragment">
         precision mediump float;
-        uniform sampler2D u_Sampler;
+        uniform sampler2D u_SamplerArrow;
+        uniform sampler2D u_SamplerCircle;
         varying vec2 v_TexCoord;
-
+        //Fragment shader receives 2 textures
         void main(void) {
-            gl_FragColor = texture2D(u_Sampler, v_TexCoord);
+            vec4 arrowTex = texture2D(u_SamplerArrow, v_TexCoord);
+            vec4 circleTex = texture2D(u_SamplerCircle, v_TexCoord);
+            gl_FragColor = arrowTex * circleTex;
         }
     </script>
 
@@ -157,11 +163,16 @@
         }
 
         function initTexturesAndDraw(gl) {
-            var image = new Image();
-            image.src = 'arrow.jpg';
-            image.onload = function () {
-                loadTexture(gl, "u_Sampler", image, 0, true);
-                drawScene();
+            var arrow = new Image();
+            arrow.src = 'arrow.jpg';
+            var circle = new Image();
+            circle.src ="circle.gif"
+            arrow.onload = function () {
+                loadTexture(gl, "u_SamplerArrow", arrow, 0, true);      //Load both images
+                circle.onload = function () {                           //as textures
+                    loadTexture(gl, "u_SamplerCircle", circle, 1, true);
+                    drawScene();
+                };
             };
         }
 
@@ -229,8 +240,6 @@
 
 </head>
 
-<body onload="init()">
-    <canvas id="myCanvas" width="640" height="480"></canvas>
-</body>
+
 
 </html>
