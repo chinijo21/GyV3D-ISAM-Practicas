@@ -10,3 +10,6 @@ Practicas 2020-2021
 - [*Ejercicio 5*](https://chinijo21.github.io/GyV3D-ISAM-Practicas/Ej5/Ej5_Juan_GyV3D.html) : A *inverted pyramid* that rotates on the Y axis. The user can choose to stop the rotation, the type of projection (**orthogonal or perspective**) or how they want to draw the pyramid using *triangles* or *lines*. With the mouse wheel while using the *perspective view* view the pyramid is zoomed in or out.
 
 
+- [*Ejercicio 6*](https://chinijo21.github.io/GyV3D-ISAM-Practicas/Ej6/Ej6_Juan_GyV3D.html) : **WIP**
+
+
