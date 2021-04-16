@@ -5,7 +5,10 @@
     <title>Ej6 cubo texturizado y movs</title>
     <body onload="init()">
         <canvas id="myCanvas" width="640" height="480"></canvas>
+        <br>
+        Step: <input type="text" id="step" value="0.1">
     </body>
+</head>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gl-matrix/2.8.1/gl-matrix-min.js"></script>
 
@@ -71,40 +74,80 @@
 
             // Init textures
             initTexturesAndDraw(gl);
+
+            //mouseWheel from Ej5
+            document.addEventListener('wheel', function (event) {
+              z = event.wheelDelta > 0 ? z + 1 : z - 1;
+              initProjection(gl,canvas);
+            });
+
+            //keypad movements from Ej4
+            document.onkeydown = function (ev){
+                var step = new Number(document.getElementById("step").value);
+                switch (ev.keyCode){
+                    case 37: // up
+                        x -= step;
+                        break;
+
+                    case 39: // down
+                        x += step;
+                        break;
+
+                    case 38: // left
+                        y += step;
+                        break;
+
+                    case 40: // right
+                        y -= step;
+                        break;
+
+                    case 33: // cam down
+                        scaled += step;
+                        break;
+
+                    case 34: // cam up
+                        scaled -= step;
+                        break;
+
+                    default:
+                        console.log("Juan");
+                }
+            }
         }
 
         function initVertexShader(gl) {
-            // Vertexes and texture coordinates
+            // Vertexes and texture coordinates 
             var vertexesAndTextures = [
-                -0.5, -0.5, -0.5, 0.0, 0.0,
-                0.5, -0.5, -0.5, 1.0, 0.0,
-                0.5, 0.5, -0.5, 1.0, 1.0,
-                -0.5, 0.5, -0.5, 0.0, 1.0,
+                //(x, y, z,          s,t)
+                -0.5, -0.5, -0.5,   0.0, 0.0,
+                0.5, -0.5, -0.5,    1.0, 0.0,
+                0.5, 0.5, -0.5,     1.0, 1.0,
+                -0.5, 0.5, -0.5,    0.0, 1.0,
 
-                -0.5, -0.5, 0.5, 0.0, 1.0,
-                0.5, -0.5, 0.5, 0.0, 0.0,
-                0.5, 0.5, 0.5, 1.0, 0.0,
-                -0.5, 0.5, 0.5, 1.0, 1.0,
+                -0.5, -0.5, 0.5,    0.0, 1.0,
+                0.5, -0.5, 0.5,     0.0, 0.0,
+                0.5, 0.5, 0.5,      1.0, 0.0,
+                -0.5, 0.5, 0.5,     1.0, 1.0,
 
-                -0.5, -0.5, -0.5, 0.0, 0.0,
-                -0.5, 0.5, -0.5, 0.0, 1.0,
-                -0.5, 0.5, 0.5, 1.0, 1.0,
-                -0.5, -0.5, 0.5, 1.0, 0.0,
+                -0.5, -0.5, -0.5,   0.0, 0.0,
+                -0.5, 0.5, -0.5,    0.0, 1.0,
+                -0.5, 0.5, 0.5,     1.0, 1.0,
+                -0.5, -0.5, 0.5,    1.0, 0.0,
 
-                0.5, -0.5, -0.5, 0.0, 0.0,
-                0.5, 0.5, -0.5, 0.0, 1.0,
-                0.5, 0.5, 0.5, 1.0, 1.0,
-                0.5, -0.5, 0.5, 1.0, 0.0,
+                0.5, -0.5, -0.5,    0.0, 0.0,
+                0.5, 0.5, -0.5,     0.0, 1.0,
+                0.5, 0.5, 0.5,      1.0, 1.0,
+                0.5, -0.5, 0.5,     1.0, 0.0,
 
-                -0.5, -0.5, -0.5, 0.0, 0.0,
-                -0.5, -0.5, 0.5, 0.0, 1.0,
-                0.5, -0.5, 0.5, 1.0, 1.0,
-                0.5, -0.5, -0.5, 1.0, 0.0,
+                -0.5, -0.5, -0.5,   0.0, 0.0,
+                -0.5, -0.5, 0.5,    0.0, 1.0,
+                0.5, -0.5, 0.5,     1.0, 1.0,
+                0.5, -0.5, -0.5,    1.0, 0.0,
 
-                -0.5, 0.5, -0.5, 0.0, 1.0,
-                -0.5, 0.5, 0.5, 0.0, 0.0,
-                0.5, 0.5, 0.5, 1.0, 0.0,
-                0.5, 0.5, -0.5, 1.0, 1.0,
+                -0.5, 0.5, -0.5,    0.0, 1.0,
+                -0.5, 0.5, 0.5,     0.0, 0.0,
+                0.5, 0.5, 0.5,      1.0, 0.0,
+                0.5, 0.5, -0.5,     1.0, 1.0,
             ];
 
             // Indexes
@@ -238,7 +281,7 @@
         }
     </script>
 
-</head>
+
 
 
 
