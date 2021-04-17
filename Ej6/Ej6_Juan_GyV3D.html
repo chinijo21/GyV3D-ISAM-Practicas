@@ -1,3 +1,4 @@
+  
 <!DOCTYPE html>
 <html>
 
@@ -43,6 +44,11 @@
     <script>
         var gl;
         var count = 0.0;
+        var z = -3;
+        var cam = 0.0;
+
+        //4 positions of the texture(up, down, left & right), init to the left
+        var posText = [1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0]; //left
 
         function init() {
             // Get canvas object from the DOM
@@ -102,16 +108,17 @@
                         break;
 
                     case 33: // cam down
-                        scaled += step;
+                        cam += step;
                         break;
 
                     case 34: // cam up
-                        scaled -= step;
+                        cam -= step;
                         break;
 
                     default:
                         console.log("Juan");
                 }
+                initVertexShader(gl);
             }
         }
 
@@ -119,10 +126,10 @@
             // Vertexes and texture coordinates 
             var vertexesAndTextures = [
                 //(x, y, z,          s,t)
-                -0.5, -0.5, -0.5,   0.0, 0.0,
-                0.5, -0.5, -0.5,    1.0, 0.0,
-                0.5, 0.5, -0.5,     1.0, 1.0,
-                -0.5, 0.5, -0.5,    0.0, 1.0,
+                -0.5, -0.5, -0.5,   posText[0], posText[1],
+                0.5, -0.5, -0.5,    posText[2], posText[3],
+                0.5, 0.5, -0.5,     posText[4], posText[5],
+                -0.5, 0.5, -0.5,    posText[6], posText[7],
 
                 -0.5, -0.5, 0.5,    0.0, 1.0,
                 0.5, -0.5, 0.5,     0.0, 0.0,
@@ -201,7 +208,7 @@
 
             // Write u_vMatrix
             var vMatrixUniform = gl.getUniformLocation(gl.program, "u_vMatrix");
-            var vMatrix = mat4.lookAt(mat4.create(), [0, 0, 3], [0, 0, 0], [0, 1, 0]);
+            var vMatrix = mat4.lookAt(mat4.create(), [0, cam, z], [0, 0, 0], [0, 1, 0]);
             gl.uniformMatrix4fv(vMatrixUniform, false, vMatrix);
         }
 
@@ -247,7 +254,7 @@
             gl.drawElements(gl.TRIANGLES, 6 * 2 * 3, gl.UNSIGNED_SHORT, 0);
 
             // Call drawScene again in the next browser repaint
-            count += 0.01;
+            //count += 0.01;
             requestAnimationFrame(drawScene);
         }
 
@@ -280,9 +287,4 @@
             return shader;
         }
     </script>
-
-
-
-
-
 </html>
