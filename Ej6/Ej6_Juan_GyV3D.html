@@ -46,6 +46,8 @@
         var count = 0.0;
         var z = -3;
         var cam = 0.0;
+        var x = 0.0;
+        var y = 0.0;
 
         //4 positions of the texture(up, down, left & right), init to the left
         var posText = [1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0]; //left
@@ -118,7 +120,7 @@
                     default:
                         console.log("Juan");
                 }
-                initVertexShader(gl);
+               initProjection(gl, canvas);
             }
         }
 
