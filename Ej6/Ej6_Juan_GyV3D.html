@@ -43,14 +43,17 @@
 
     <script>
         var gl;
-        var count = 0.0;
         var z = -3;
         var cam = 0.0;
         var x = 0.0;
         var y = 0.0;
 
         //4 positions of the texture(up, down, left & right), init to the left
-        var posText = [1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0]; //left
+        var pos1 = [ 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0, 0.0]; 
+        var pos2 = [ 0.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0]; 
+        var pos3 = [ 1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0]; 
+        var pos4 = [ 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0]; 
+        var posText = pos1; 
 
         function init() {
             // Get canvas object from the DOM
@@ -86,27 +89,34 @@
             //mouseWheel from Ej5
             document.addEventListener('wheel', function (event) {
               z = event.wheelDelta > 0 ? z + 1 : z - 1;
-              initProjection(gl,canvas);
             });
 
             //keypad movements from Ej4
             document.onkeydown = function (ev){
                 var step = new Number(document.getElementById("step").value);
                 switch (ev.keyCode){
-                    case 40: // up
-                        x -= step;
+                    case 37: // up
+                        y += step;
+                        x = 0.0;
+                        posText = o1;
                         break;
 
                     case 39: // down
-                        x += step;
+                        y -= step;
+                        x = 0.0;
+                        posText = o3;
                         break;
 
                     case 38: // left
-                        y += step;
+                        x += step;
+                        y = 0.0;
+                        posText = o4;
                         break;
 
-                    case 37: // right
-                        y -= step;
+                    case 40: // right 
+                        x -= step;
+                        y = 0.0;
+                        posText = o2;
                         break;
 
                     case 33: // cam down
@@ -120,7 +130,7 @@
                     default:
                         console.log("Juan");
                 }
-               initProjection(gl, canvas);
+                initVertexShader(gl);
             }
         }
 
@@ -133,30 +143,30 @@
                 0.5, 0.5, -0.5,     posText[4], posText[5],
                 -0.5, 0.5, -0.5,    posText[6], posText[7],
 
-                -0.5, -0.5, 0.5,    0.0, 1.0,
-                0.5, -0.5, 0.5,     0.0, 0.0,
-                0.5, 0.5, 0.5,      1.0, 0.0,
-                -0.5, 0.5, 0.5,     1.0, 1.0,
+                -0.5, -0.5, 0.5,    posText[4], posText[5],
+                0.5, -0.5, 0.5,     posText[6], posText[7],
+                0.5, 0.5, 0.5,      posText[0], posText[1],
+                -0.5, 0.5, 0.5,     posText[2], posText[3],
 
-                -0.5, -0.5, -0.5,   0.0, 0.0,
-                -0.5, 0.5, -0.5,    0.0, 1.0,
-                -0.5, 0.5, 0.5,     1.0, 1.0,
-                -0.5, -0.5, 0.5,    1.0, 0.0,
+                -0.5, -0.5, -0.5,   posText[2], posText[3],
+                -0.5, 0.5, -0.5,    posText[4], posText[5],
+                -0.5, 0.5, 0.5,     posText[6], posText[7],
+                -0.5, -0.5, 0.5,    posText[0], posText[1],
 
-                0.5, -0.5, -0.5,    0.0, 0.0,
-                0.5, 0.5, -0.5,     0.0, 1.0,
-                0.5, 0.5, 0.5,      1.0, 1.0,
-                0.5, -0.5, 0.5,     1.0, 0.0,
+                0.5, -0.5, -0.5,    posText[6], posText[7],
+                0.5, 0.5, -0.5,     posText[0], posText[1],
+                0.5, 0.5, 0.5,      posText[2], posText[3],
+                0.5, -0.5, 0.5,     posText[4], posText[5],
 
-                -0.5, -0.5, -0.5,   0.0, 0.0,
-                -0.5, -0.5, 0.5,    0.0, 1.0,
-                0.5, -0.5, 0.5,     1.0, 1.0,
-                0.5, -0.5, -0.5,    1.0, 0.0,
+                -0.5, -0.5, -0.5,   posText[6], posText[7],
+                -0.5, -0.5, 0.5,    posText[0], posText[1],
+                0.5, -0.5, 0.5,     posText[2], posText[3],
+                0.5, -0.5, -0.5,    posText[4], posText[5],
 
-                -0.5, 0.5, -0.5,    0.0, 1.0,
-                -0.5, 0.5, 0.5,     0.0, 0.0,
-                0.5, 0.5, 0.5,      1.0, 0.0,
-                0.5, 0.5, -0.5,     1.0, 1.0,
+                -0.5, 0.5, -0.5,    posText[2], posText[3],
+                -0.5, 0.5, 0.5,     posText[4], posText[5],
+                0.5, 0.5, 0.5,      posText[6], posText[7],
+                0.5, 0.5, -0.5,     posText[0], posText[1],
             ];
 
             // Indexes
@@ -210,7 +220,7 @@
 
             // Write u_vMatrix
             var vMatrixUniform = gl.getUniformLocation(gl.program, "u_vMatrix");
-            var vMatrix = mat4.lookAt(mat4.create(), [0, cam, z], [0, 0, 0], [0, 1, 0]);
+            var vMatrix = mat4.lookAt(mat4.create(), [0, 0, z], [0, 0, 0], [0, 1, 0]);
             gl.uniformMatrix4fv(vMatrixUniform, false, vMatrix);
         }
 
@@ -254,6 +264,11 @@
             var mvMatrix = mat4.multiply(mat4.create(), rotX, rotY);
             var uMvMatrix = gl.getUniformLocation(gl.program, "u_mvMatrix");
             gl.uniformMatrix4fv(uMvMatrix, false, mvMatrix);
+
+            //View matrix
+            var vMatrix = mat4.lookAt(mat4.create(), [0, cam, z], [0, 0, 0], [0, 1, 0]);
+            var vMatrixUniform = gl.getUniformLocation(gl.program, "u_vMatrix");
+            gl.uniformMatrix4fv(vMatrixUniform, false, vMatrix);
 
             // Draw
             gl.drawElements(gl.TRIANGLES, 6 * 2 * 3, gl.UNSIGNED_SHORT, 0);
