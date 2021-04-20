@@ -96,25 +96,25 @@
                 var step = new Number(document.getElementById("step").value);
                 switch (ev.keyCode){
                     case 37: // up
-                        y += step;
+                        y -= step;
                         x = 0.0;
                         posText = o1;
                         break;
 
                     case 39: // down
-                        y -= step;
+                        y += step;
                         x = 0.0;
                         posText = o3;
                         break;
 
-                    case 38: // left
-                        x += step;
+                    case 40: // left
+                        x -= step;
                         y = 0.0;
                         posText = o4;
                         break;
 
-                    case 40: // right 
-                        x -= step;
+                    case 38: // right 
+                        x += step;
                         y = 0.0;
                         posText = o2;
                         break;
