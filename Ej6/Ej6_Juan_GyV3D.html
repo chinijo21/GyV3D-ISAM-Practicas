@@ -44,11 +44,12 @@
 
     <script>
         var gl;
-        var canvas;
+        var canvas; //Here so i don´t have to call it again 
         var x = 0.0;
         var y = 0.0;
         var cam = 0;
-        var z = -3;
+        var z = -3; //Default value for mouseWheel
+        var actualPos;
 
         //4 positions of the texture(up, down, left & right), init to the left
         var left_pos =  [0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0, 0.0]; 
@@ -57,13 +58,13 @@
         var up_pos   =  [0.0, 0.0, 1.0, 0.0, 1.0, 1.0, 0.0, 1.0]; 
        
         //Init to left_pos
-        var actualPos = left_pos;
+        actualPos = left_pos;
         
         function init() {
             // Get canvas object from the DOM
             canvas = document.getElementById("myCanvas");
-           
-            // Init WebGL context
+
+           // Init WebGL context
             gl = canvas.getContext("webgl");
             if (!gl) {
                 console.log("Failed to get the rendering context for WebGL");
@@ -74,9 +75,10 @@
             var vs = document.getElementById('shaderVs').innerHTML;
             var fs = document.getElementById('shaderFs').innerHTML;
             initShaders(gl, vs, fs);
-
+            
             // Init vertex shader
             initVertexShader(gl);
+
             // Init projection matrix
             initProjection(gl, canvas);
 
@@ -86,7 +88,7 @@
             // Hidden surface removal
             gl.enable(gl.DEPTH_TEST);
 
-            //mouseWheel from Ej5
+           //mouseWheel from Ej5
             document.addEventListener('wheel', function (event) {
                   z = event.wheelDelta > 0 ? z + 1 : z - 1;
             });
@@ -123,8 +125,8 @@
                     case 34: // avpag 
                         cam -= step;
                         break;
-                    case 65: //Autor + github
-                        console.log("Juan: https://github.com/chinijo21/GyV3D-ISAM-Practicas/blob/master/Ej6/Ej6_Juan_GyV3D.html")
+                    case 65: // a key = Autor + correo
+                        console.log("Juan Antonio Cejudo ja.cejudo.2016@alumnos.urjc.es")
 
                     default:
                         console.log("desmotivaciones.es")
@@ -231,7 +233,7 @@
             var circle = new Image();
             circle.src = 'circle.gif';
             arrow.onload = function () {
-                loadTexture(gl, "u_SamplerArrow", arrow, 0, false);         //Load both images
+                loadTexture(gl, "u_SamplerArrow", arrow, 0, false);         //.-Load both images                                                                                                                                                                                                                                                                                                       //Oh no alguien quiere este codigo, creador og: https://github.com/chinijo21/GyV3D-ISAM-Practicas finalizado el 23/04/2021 
                 circle.onload = function () {                               //as textures
                     loadTexture(gl, "u_SamplerCircle", circle, 1, false);
                     drawScene();
@@ -263,7 +265,7 @@
             var rotX = mat4.fromXRotation(mat4.create(), x);
             var rotY = mat4.fromYRotation(mat4.create(), y);
 
-            //Rotate
+            //Multiply both rotion matrix
             var mvMatrix = mat4.multiply(mat4.create(), rotX, rotY);
             var uMvMatrix = gl.getUniformLocation(gl.program, "u_mvMatrix");
             gl.uniformMatrix4fv(uMvMatrix, false, mvMatrix);
