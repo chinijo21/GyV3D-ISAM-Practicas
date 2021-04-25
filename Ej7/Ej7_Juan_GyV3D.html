@@ -22,7 +22,10 @@
     <script id="shaderVs" type="x-shader/x-vertex">
         attribute vec4 a_Position;
         attribute vec2 a_TexCoord;
+        attribute vec3 a_Color; //Ambient
+        
 
+        uniform vec3 u_AmbientLight; //Ambient
         uniform mat4 u_pMatrix;
         uniform mat4 u_vMatrix;
         uniform mat4 u_mvMatrix;
@@ -33,6 +36,9 @@
         void main() {
             gl_Position = u_pMatrix * u_vMatrix * u_mvMatrix * a_Position;
             v_TexCoord = a_TexCoord;
+
+            vec3 ambient = u_AmbientLight * a_Color;
+            v_Color = vec4(ambient, 1.0);
         }
     </script>
 
@@ -157,13 +163,22 @@
             // Write u_pMatrix
             var pMatrixUniform = gl.getUniformLocation(gl.program, "u_pMatrix");
             var ratio = canvas.width / canvas.height;
-            var pMatrix = mat4.perspective(mat4.create(), toRadian(60), ratio, 0.1, 100);
+            var pMatrix = mat4.perspective(mat4.create(), 150, ratio, 0.1, 100);
             gl.uniformMatrix4fv(pMatrixUniform, false, pMatrix);
 
             // Write u_vMatrix
             var vMatrixUniform = gl.getUniformLocation(gl.program, "u_vMatrix");
             var vMatrix = mat4.lookAt(mat4.create(), [0, 0, -3], [0, 0, 0], [0, 1, 0]);
             gl.uniformMatrix4fv(vMatrixUniform, false, vMatrix);
+
+            //Write u_AmbientLight, light color comes from UI ando goes to vertex shader u_AmbientLight
+            var r = document.getElementById("r").value;
+            var g = document.getElementById("g").value;
+            var b = document.getElementById("b").value;
+            var ambientColor = [r, g, b];
+            var ambientColorUniform = gl.getUniformLocation(gl.program, "u_AmbientLight");
+            gl.uniform3fv(ambientColorUniform, ambientColor);
+
         }
 
         function initTexturesAndDraw(gl) {
