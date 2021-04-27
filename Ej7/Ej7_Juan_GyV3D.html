@@ -25,7 +25,7 @@
         attribute vec2 a_TextCoord;
         //attribute vec3 a_Color; dont need color bc we have a texture
 
-        uniform vec3
+        uniform vec3 u_lightPosition;
 
         uniform mat4 u_pMatrix;
         uniform mat4 u_vMatrix;
@@ -66,6 +66,11 @@
             vec4 star = texture2D(u_Sampler, v_TexCoord);
 
             vec3 ambient = u_AmbientLight * star.rgb;
+
+            vec3 diffuse = u_LightColor * star.rgb * nDotL;
+
+            //TOTAL
+            gl_FragColor = vec4(ambient + diffuse, 1.0);
 
             
         }
@@ -113,6 +118,9 @@
         function initVertexShader(gl) {
             // Vertexes and textures coordinates
             var vertexesAndTextures = [];
+
+            //Array for the normal of the sphere
+            var normal = [];
             for (var i = 0; i <= LATITUDE_BANDS; i++) {
                 var theta = i * Math.PI / LATITUDE_BANDS;
                 var sinTheta = Math.sin(theta);
@@ -130,6 +138,10 @@
                     vertexesAndTextures.push(RADIUS * x);
                     vertexesAndTextures.push(RADIUS * y);
                     vertexesAndTextures.push(RADIUS * z);
+
+                    normal.push(x);
+                    normal.push(y);
+                    normal.push(z);
 
                     var u = 1 - (j / LONGITUDE_BANDS);
                     var v = 1 - (i / LATITUDE_BANDS);
@@ -188,6 +200,19 @@
             var vMatrixUniform = gl.getUniformLocation(gl.program, "u_vMatrix");
             var vMatrix = mat4.lookAt(mat4.create(), [0, 0, -3], [0, 0, 0], [0, 1, 0]);
             gl.uniformMatrix4fv(vMatrixUniform, false, vMatrix);
+
+            //Write u_lightcolor
+            var lightColor = [1.0, 1.0, 1.0];
+            var lightColorUniform = gl.getUniformLocation(gl.program, "u_LightColor");
+
+            //Write u_LightPos
+            var x = document.getElementById("x").value;
+            var y = document.getElementById("y").value;
+            var z = document.getElementById("z").value;
+
+            var lightPosition = [x, y, z];
+            var lightPositionUniform = gl.getUniformLocation(gl.program, "u_lightPosition");
+            gl.uniform3fv(lightPositionUniform, lightPosition);
 
             //Write u_AmbientLight, light color comes from UI ando goes to vertex shader u_AmbientLight
             var r = document.getElementById("r").value;
