@@ -30,9 +30,9 @@
         uniform mat4 u_pMatrix;
         uniform mat4 u_vMatrix;
         uniform mat4 u_mvMatrix;
-        uniform mat4 u_NormalMatrix; //Magic matrix (transpose and invert u_mvMatrix)
+        uniform mat4 u_normalMatrix; //Magic matrix (transpose and invert u_mvMatrix)
 
-        varying vec4 v_Normal; //magic Matrix
+        varying vec4 v_normal; //magic Matrix
         varying vec2 v_TextCoord;
         varying highp vec3 v_lightDirection;
 
@@ -40,7 +40,7 @@
             gl_Position = u_pMatrix * u_vMatrix * u_mvMatrix * a_Position;
             v_TexCoord = a_TexCoord;
             v_lightDirection = normalize(u_lightPosition - vec3(gl_Position));
-            v_Normal = normalize(u_NormalMatrix * vec4(a_Normal, 1.0));
+            v_Normal = normalize(u_normalMatrix * vec4(a_Normal, 1.0));
 
         }
     </script>
@@ -256,6 +256,16 @@
             var mvMatrix = mat4.fromRotation(mat4.create(), count, [0, 0.5, 0]);
             var uMvMatrix = gl.getUniformLocation(gl.program, "u_mvMatrix");
             gl.uniformMatrix4fv(uMvMatrix, false, mvMatrix);
+
+            //Get the normal direction using the model Matrix
+            //1Invert
+            var normalInvert = mat4.invert(mat4().create, mvMatrix);
+
+            //2Transpose
+            var invertedTranspose = mat4.transpose(mat4.create(), normalInvert);
+
+            var normalMatrix = gl.getUniformLocation(gl.program, "u_NormalMatrix");
+            gl.uniformMatrix4fv(normalMatrix, false, invertedTranspose);
 
             // Draw
             gl.drawElements(gl.TRIANGLES, LATITUDE_BANDS * LONGITUDE_BANDS * 3 * 2, gl.UNSIGNED_SHORT, 0);
