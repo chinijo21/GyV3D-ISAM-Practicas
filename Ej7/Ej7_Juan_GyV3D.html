@@ -121,6 +121,7 @@
 
             //Array for the normal of the sphere
             var normal = [];
+
             for (var i = 0; i <= LATITUDE_BANDS; i++) {
                 var theta = i * Math.PI / LATITUDE_BANDS;
                 var sinTheta = Math.sin(theta);
@@ -180,6 +181,10 @@
             gl.enableVertexAttribArray(vertexColorAttribute);
             gl.vertexAttribPointer(vertexColorAttribute, 2, gl.FLOAT, false, 4 * (3 + 2), 4 * 3);
 
+            //Buffer for normal array
+            gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer());
+            gl.bufferData(gl.ARRAY_BUFFER, normal, gl.STATIC_DRAW);
+            
             // Write indexes in gl.ELEMENT_ARRAY_BUFFER
             gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, gl.createBuffer());
             gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(indexes), gl.STATIC_DRAW);
