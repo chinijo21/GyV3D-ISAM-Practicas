@@ -12,6 +12,6 @@ Practicas 2020-2021
 
 - [*Ejercicio 6*](https://chinijo21.github.io/GyV3D-ISAM-Practicas/Ej6/Ej6_Juan_GyV3D.html) : **Textured cube**. Arrow changes direction depending of the arrow that is pressed. Avpag and repag changes the cam position
 
-- [*Ejercicio 7*](https://github.com/chinijo21/GyV3D-ISAM-Practicas/Ej7/Ejercicio7_Juan_GyV3D.html) : **WIP**
+- [*Ejercicio 7*](https://github.com/chinijo21/GyV3D-ISAM-Practicas/Ej7/Ej7_Juan_GyV3D.html) : **WIP**
 
 
