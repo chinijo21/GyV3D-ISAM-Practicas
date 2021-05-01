@@ -2,7 +2,7 @@
 <html>
 
 <head>
-    <title>Ej 7</title>
+    <title>Ej 7 Text + Luz</title>
 
     <body onload="init()">
         <canvas id="myCanvas" width="640" height="480"></canvas>
@@ -49,7 +49,6 @@
 
     <script id="shaderFs" type="x-shader/x-fragment">
         precision highp float;
-        precision mediump float;
 
         varying vec2 v_TexCoord;
         varying vec4 v_NormalMatrix; // Magic Matrix
@@ -198,9 +197,11 @@
             gl.enableVertexAttribArray(vertexNormalAttribute);
             gl.vertexAttribPointer(vertexNormalAttribute, 3, gl.FLOAT, false, 0, 0);
         }
+
         function toRadian(g){
             return g*Math.PI/180;
         }
+
         function initProjection() {
             //Write u_pMatrix
             var pMatrixUniform = gl.getUniformLocation(gl.program, "u_pMatrix");
