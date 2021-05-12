@@ -12,14 +12,7 @@ function getBackground(){
     backScene.add(backCam);
     backScene.add(backMesh);
     
-    //RenderIt!
-    var render = function() {
-        requestAnimationFrame(render);
-        renderer.autoClear = false;
-        renderer.clear();
-        renderer.render(backScene, backCam);
-    };
-    render();
+    return{backScene, backCam};
 }
 
 function getLight(){
@@ -48,7 +41,7 @@ function getFloor(floor){
     return floorFinal;
 }
 
-function getBorder(what, x, y, z, posX, posY, posZ){
+function getWall(which, x, y, z, posX, posY, posZ){
     var geometry = new THREE.BoxGeometry(x, y, z);
     var mesh = new THREE.Mesh(geometry, getMaterial('Border'));
     mesh.receiveShadow = true;
@@ -66,6 +59,10 @@ function getBall(){
     mesh.name = "ball"
 
     return mesh;
+}
+
+function animate(light, floor, walls, ball){
+
 }
 
 function init(){
@@ -86,7 +83,16 @@ function init(){
     document.body.appendChild(renderer.domElement);
 
     //call for Background functiones
-    getBackground();
+    var background = getBackground();
+
+    //RenderIt!
+    var render = function() {
+        requestAnimationFrame(render);
+        renderer.autoClear = false;
+        renderer.clear();
+        renderer.render(background.backScene, background.backCam);
+    };
+    render();
 
     //la lux
     var light = getLight();
@@ -94,10 +100,23 @@ function init(){
     //get floor
     var floor = getFloor("floor");
 
-    //get borders
+    //get walls
+    var user = getWall("down", 3, 1, 2, 0, -9.5, 0);
+    var ai = getWall("top", 3, 1, 2, 0, 10, 0);
+    var leftWall = getWall("left", 1, 20, 2, -7, 0, 0);
+    var rightWall = getWall("right", 1, 20, 2, 7, 0, 0);
+
+    var walls = [user, ai, leftWall, rightWall]
 
     //get ball
     var ball = getBall();
 
+    //Add all of them
+    scene.add(light);
+    scene.add(floor);
+    scene.add(walls);
+    scene.add(balls);
+
+    animate(light, floor, walls, balls);
 }
 
