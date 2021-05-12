@@ -22,6 +22,18 @@ function getBackground(){
     render();
 }
 
+function getLight(){
+    
+}
+
+function getFloor(floor){
+    var geometry = new THREE.PlaneGeometry(15,20);
+    var floorFinal = new THREE.Mesh(geometry, getMaterial(floor));
+    floorFinal.receiveShadow = true;
+
+    return floorFinal;
+}
+
 function init(){
     //Define scene + size
     var scene = new THREE.Scene();
@@ -41,5 +53,11 @@ function init(){
 
     //call for Background functiones
     getBackground();
+
+    //la lux
+    var light = getLight();
+
+    //get floor
+    var floor = getFloor("floor")
 }
 
