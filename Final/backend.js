@@ -23,7 +23,21 @@ function getBackground(){
 }
 
 function getLight(){
-    
+    var light = new THREE.DirectionalLight();
+    light.position.set(2.5, 4, 3);
+    light.castShadow = true;
+
+    light.shadow.camera.near = 0;
+    light.shadow.camera.top = 10;
+    light.shadow.camera.bottom = -10;
+    light.shadow.camera.left = -8;
+    light.shadow.camera.right = 5;
+    light.shadow.camera.far = 16;
+
+    light.shadow.mapSize.width = 4096;
+    light.shadow.mapSize.height = 4096;
+
+    return light;
 }
 
 function getFloor(floor){
@@ -32,6 +46,26 @@ function getFloor(floor){
     floorFinal.receiveShadow = true;
 
     return floorFinal;
+}
+
+function getBorder(what, x, y, z, posX, posY, posZ){
+    var geometry = new THREE.BoxGeometry(x, y, z);
+    var mesh = new THREE.Mesh(geometry, getMaterial('Border'));
+    mesh.receiveShadow = true;
+    mesh.position.set(posX, posY, posZ);
+    mesh.name = what;
+  
+    return mesh;
+}
+
+function getBall(){
+    var geometry = new THREE.SphereGeometry(1, 20, 20);
+    var mesh = new TRHEE.Mesh(geometry, getMaterial('Ball'));
+    mesh.position.z = 1;
+    mesh.castShadow = true;
+    mesh.name = "ball"
+
+    return mesh;
 }
 
 function init(){
@@ -58,6 +92,12 @@ function init(){
     var light = getLight();
 
     //get floor
-    var floor = getFloor("floor")
+    var floor = getFloor("floor");
+
+    //get borders
+
+    //get ball
+    var ball = getBall();
+
 }
 
