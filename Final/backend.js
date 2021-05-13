@@ -1,5 +1,5 @@
 function getBackground(){
-    var backText = THREE.ImageUtils.loadTexture('background.jpg')
+    var backText = new THREE.TextureLoader().load("background.jpg");
     var backMesh = new THREE.Mesh(
         new THREE.PlaneGeometry(3, 2, 0),
         new THREE.MeshBasicMaterial({map: backText})
@@ -31,6 +31,12 @@ function texturizer(what){
             image = new THREE.TextureLoader().load("wood.png");
             break;
 
+        case 'user':
+            break;
+          
+        case 'ai':
+            break;
+                
         default:
             console.log("This object has no texture")
             break;
@@ -70,7 +76,22 @@ function getFloor(floor){
 
 function getWall(which, x, y, z, posX, posY, posZ){
     var geometry = new THREE.BoxGeometry(x, y, z);
-    var mesh = new THREE.Mesh(geometry, texturizer('wall'));
+    var mesh;
+    //TODO: get some textures
+    switch(which){
+        case "user":
+            mesh = new THREE.Mesh(geometry, texturizer('wall'));
+            break;
+
+        case "ai":
+            mesh = new THREE.Mesh(geometry, texturizer('wall'));
+            break;
+
+        default:
+            mesh = new THREE.Mesh(geometry, texturizer('wall'));
+            break;
+    }
+    
     mesh.receiveShadow = true;
     mesh.position.set(posX, posY, posZ);
     mesh.name = "wall";
@@ -94,6 +115,11 @@ function animate(walls, ball, scene, cam, renderer){
     var user = walls[0];
     var ai = walls[1];
     
+    //ball movement
+    //collision detection
+    //cpu movement
+
+
 
     renderer.render(scene, cam);
     requestAnimationFrame(function(){
@@ -137,8 +163,8 @@ function init(){
     var floor = getFloor("floor");
 
     //get walls
-    var user = getWall("down", 3, 1, 2, 0, -9.5, 0);
-    var ai = getWall("top", 3, 1, 2, 0, 10, 0);
+    var user = getWall("user", 3, 1, 2, 0, -9.5, 0);
+    var ai = getWall("ai", 3, 1, 2, 0, 10, 0);
     var leftWall = getWall("left", 1, 20, 2, -7, 0, 0);
     var rightWall = getWall("right", 1, 20, 2, 7, 0, 0);
 
