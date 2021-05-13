@@ -16,24 +16,30 @@ function getBackground(){
 }
 
 function texturizer(what){
-    //var texture;
+    var texture;
+    var image;
     switch(what){
         case 'floor':
-            var texture = new THREE.TextureLoader().load("texture.png");
+            image = new THREE.TextureLoader().load("texture.png");
             break;
         
         case 'wall':
-            var texture = new THREE.TextureLoader().load("wood.png");
+            image = new THREE.TextureLoader().load("wood.png");
             break;
 
         case 'ball':
+            image = new THREE.TextureLoader().load("wood.png");
             break;
 
         default:
             console.log("This object has no texture")
             break;
     }
+    texture = new THREE.MeshPhysicalMaterial({map: image});
+    texture.map.wrapS = texture.map.wrapT = THREE.RepeatWrapping;
+    texture.side = THREE.DoubleSide;
 
+    return texture;
 }
 
 function getLight(){
@@ -144,7 +150,10 @@ function init(){
     //Add all of them
     scene.add(light);
     scene.add(floor);
-    scene.add(walls);
+    scene.add(leftWall);
+    scene.add(rightWall);
+    scene.add(user);
+    scene.add(ai);
     scene.add(ball);
 
     animate(walls, ball, scene, cam, renderer);
