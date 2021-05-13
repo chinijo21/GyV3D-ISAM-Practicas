@@ -1,5 +1,5 @@
 function getBackground(){
-    var backText = THREE.ImageUtils.loadTexture('getsomething.png')
+    var backText = THREE.ImageUtils.loadTexture('background.jpg')
     var backMesh = new THREE.Mesh(
         new THREE.PlaneGeometry(3, 2, 0),
         new THREE.MeshBasicMaterial({map: backText})
@@ -13,6 +13,27 @@ function getBackground(){
     backScene.add(backMesh);
     
     return{backScene, backCam};
+}
+
+function texturizer(what){
+    //var texture;
+    switch(what){
+        case 'floor':
+            var texture = new THREE.TextureLoader().load("texture.png");
+            break;
+        
+        case 'wall':
+            var texture = new THREE.TextureLoader().load("wood.png");
+            break;
+
+        case 'ball':
+            break;
+
+        default:
+            console.log("This object has no texture")
+            break;
+    }
+
 }
 
 function getLight(){
@@ -35,7 +56,7 @@ function getLight(){
 
 function getFloor(floor){
     var geometry = new THREE.PlaneGeometry(15,20);
-    var floorFinal = new THREE.Mesh(geometry, getMaterial(floor));
+    var floorFinal = new THREE.Mesh(geometry, texturizer('floor'));
     floorFinal.receiveShadow = true;
 
     return floorFinal;
@@ -43,17 +64,17 @@ function getFloor(floor){
 
 function getWall(which, x, y, z, posX, posY, posZ){
     var geometry = new THREE.BoxGeometry(x, y, z);
-    var mesh = new THREE.Mesh(geometry, getMaterial('Border'));
+    var mesh = new THREE.Mesh(geometry, texturizer('wall'));
     mesh.receiveShadow = true;
     mesh.position.set(posX, posY, posZ);
-    mesh.name = what;
+    mesh.name = "wall";
   
     return mesh;
 }
 
 function getBall(){
     var geometry = new THREE.SphereGeometry(1, 20, 20);
-    var mesh = new TRHEE.Mesh(geometry, getMaterial('Ball'));
+    var mesh = new THREE.Mesh(geometry, texturizer('ball'));
     mesh.position.z = 1;
     mesh.castShadow = true;
     mesh.name = "ball"
@@ -61,8 +82,17 @@ function getBall(){
     return mesh;
 }
 
-function animate(light, floor, walls, ball){
+function animate(walls, ball, scene, cam, renderer){
+    //TODO
+    //get user and ai pos 
+    var user = walls[0];
+    var ai = walls[1];
+    
 
+    renderer.render(scene, cam);
+    requestAnimationFrame(function(){
+        animate(walls, ball, scene, cam, renderer);
+    });
 }
 
 function init(){
@@ -72,9 +102,9 @@ function init(){
     var sceneHeight = window.innerHeight;
 
     //Define camera + where to lookAt
-    var camera = new THREE.PerspectiveCamera(90, sceneWidth/sceneHeight, 0.01, 100);
-    camera.position.set(0, -10, 15);
-    camera.lookAt(scene.position);
+    var cam = new THREE.PerspectiveCamera(90, sceneWidth/sceneHeight, 0.01, 100);
+    cam.position.set(0, -10, 15);
+    cam.lookAt(scene.position);
 
     //Create renderer
     var renderer = new THREE.WebGLRenderer({antialias : true});
@@ -115,8 +145,8 @@ function init(){
     scene.add(light);
     scene.add(floor);
     scene.add(walls);
-    scene.add(balls);
+    scene.add(ball);
 
-    animate(light, floor, walls, balls);
+    animate(walls, ball, scene, cam, renderer);
 }
 
