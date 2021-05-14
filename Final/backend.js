@@ -1,3 +1,19 @@
+//-- Speed
+var v_SpeedBall = 1;
+var v_Max = 1.5;
+var v_Min = 0.75;
+//-- Initial position x of the cpu and user
+var pos_CpuX = 0;
+var pos_UserX = 0;
+//--Ball
+var movX = 0.15;
+var movY = 0.25;
+var a_AngleBall = 1;
+var ballSize = 1;
+
+var startGame = false;
+var longPlayer = 3;
+var borderMax = 7;
 function getBackground(){
     var backText = new THREE.TextureLoader().load("background.jpg");
     var backMesh = new THREE.Mesh(
@@ -100,7 +116,7 @@ function getWall(which, x, y, z, posX, posY, posZ){
 }
 
 function getBall(){
-    var geometry = new THREE.SphereGeometry(1, 20, 20);
+    var geometry = new THREE.SphereGeometry(ballSize, 20, 20);
     var mesh = new THREE.Mesh(geometry, texturizer('ball'));
     mesh.position.z = 1;
     mesh.castShadow = true;
@@ -110,39 +126,58 @@ function getBall(){
 }
 
 function ballMov(ball){
-    var ballX = ball.position.x;
-    var ballY = ball.position.y;
-
-    ballX += movX * speed * angle;
-    ballY += movY * speed;
-}
-
-function collision(walls, ball){
-    //walls 0=user 1=ia 2=left 3=right
-    var originPosition = ball.position.clone();
-    var ballLength = ball.geometry.vertices.length;
-
-    for (var i = 0; i < ballLength ; i++) {
-        var localVertex = ball.geometry.vertices[i].clone();
-        var globalVertex = localVertex.applyMatrix4(ball.matrix);
-        var directionVector = globalVertex.sub(ball.position);
-        var ray = new THREE.Raycaster(originPosition, directionVector.clone().normalize());
-        var collisionResults = ray.intersectObjects(walls);
-        
-
+    if (startGame){
+        ball.position.x += movX * v_SpeedBall * a_AngleBall;
+        ball.position.y += movY * v_SpeedBall;
     }
     
-    
-
 }
+
+
+
+function inRange(ball, user){
+    var up = -10;
+    var down = 10;
+    switch(ball.position.y){
+        case up:
+            ball.position.x = 0;
+            ball.position.y = 0;
+            user.position.x = 0;
+            startGame = false;
+            movY = -movY;
+            
+            break;
+        case down:
+            ball.position.x = 0;
+            ball.position.y = 0;
+            startGame = false;
+            movY = -movY;
+            user.position.x = 0;
+            break;
+    }
+}
+
+function aiMoves(ai, ball){
+    ai.position.x = ball.position.x * 0.6;
+
+    if(ai.position.x > 7){
+        ai.position.x = 7;
+    }else if(ai.position.x < -7){
+        ai.position.x = -7;
+    }
+    
+}
+
 function animate(walls, ball, scene, cam, renderer){
     //TODO
     //Collisiom 0=user 1=ai
-    collision(walls, ball);
+    //collision(walls, ball);
     //ball movement
+    inRange(ball, walls[0]);
     ballMov(ball);
     //collision detection
     //cpu movement
+    aiMoves(walls[1], ball);
 
 
 
@@ -188,10 +223,10 @@ function init(){
     var floor = getFloor("floor");
 
     //get walls
-    var user = getWall("user", 3, 1, 2, 0, -9.5, 0);
-    var ai = getWall("ai", 3, 1, 2, 0, 10, 0);
-    var leftWall = getWall("left", 1, 20, 2, -7, 0, 0);
-    var rightWall = getWall("right", 1, 20, 2, 7, 0, 0);
+    var user = getWall("user", longPlayer, 1, 2, 0, -9.5, 0);
+    var ai = getWall("ai", longPlayer, 1, 2, 0, 10, 0);
+    var leftWall = getWall("left", 1, 20, 2, -borderMax, 0, 0);
+    var rightWall = getWall("right", 1, 20, 2, borderMax, 0, 0);
 
     var walls = [user, ai, leftWall, rightWall]
 
@@ -208,11 +243,30 @@ function init(){
         scene.add(walls[i]);
     }
     //Movement
+    //-- Move user
+  window.onkeydown = (e) => {
+    e.preventDefault();
+    switch (e.key) {
+      case 'ArrowLeft':
+        if(user.position.x > -5){
+          user.position.x -= 0.35;
+        }
+        break;
+      case 'ArrowRight':
+        if(user.position.x < 5){
+          user.position.x += 0.35;
+        }
+        break;
+      case ' ':
+        startGame = true;
+        //-- Read new texture of floor
+        
+        break;
+      default:
+        break;
+    }
+  }
 
     animate(walls, ball, scene, cam, renderer);
 }
 
-var movX = 0.15;
-var movY = 0.25;
-var angle = 1;
-var speed = 1;
