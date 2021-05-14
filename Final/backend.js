@@ -18,6 +18,8 @@ var startGame = false;
 var longPlayer = 3;
 var borderMax = 6.5;
 
+//TODO: Collision
+
 function getBackground(){
     var backText = new THREE.TextureLoader().load("background.jpg");
     var backMesh = new THREE.Mesh(
@@ -48,7 +50,7 @@ function texturizer(what){
             break;
 
         case 'ball':
-            image = new THREE.TextureLoader().load("wood.png");
+            image = new THREE.TextureLoader().load("texture.png");
             break;
 
         case 'user':
@@ -96,25 +98,12 @@ function getFloor(floor){
 
 function getWall(which, x, y, z, posX, posY, posZ){
     var geometry = new THREE.BoxGeometry(x, y, z);
-    var mesh;
+    //var mesh;
     //TODO: get some textures
-    switch(which){
-        case "user":
-            mesh = new THREE.Mesh(geometry, texturizer('wall'));
-            break;
-
-        case "ai":
-            mesh = new THREE.Mesh(geometry, texturizer('wall'));
-            break;
-
-        default:
-            mesh = new THREE.Mesh(geometry, texturizer('wall'));
-            break;
-    }
-    
+    var mesh = new THREE.Mesh(geometry, texturizer('wall'));
     mesh.receiveShadow = true;
     mesh.position.set(posX, posY, posZ);
-    mesh.name = "wall";
+    mesh.name = which;
   
     return mesh;
 }
@@ -134,7 +123,6 @@ function ballMov(ball){
         ball.position.x += movX * ballSpeed * ballAngle;
         ball.position.y += movY * ballSpeed;
     }
-    
 }
 
 function inRange(ball, user){
@@ -173,15 +161,12 @@ function aiMoves(ai, ball){
 function animate(walls, ball, scene, cam, renderer){
     //TODO
     //Collisiom 0=user 1=ai
-    //collision(walls, ball);
     //ball movement
     inRange(ball, walls[0]);
     ballMov(ball);
-    //collision detection
+
     //cpu movement
     aiMoves(walls[1], ball);
-
-
 
     renderer.render(scene, cam);
     requestAnimationFrame(function(){
@@ -221,16 +206,18 @@ function init(){
     //la lux
     var light = getLight();
 
+    //get walls
+    var user = getWall("top", longPlayer, 1, 2, 0, -9.5, 0);
+    var ai = getWall("down", longPlayer, 1, 2, 0, 10, 0);
+    var leftWall = getWall("left", 1, 20, 2, -borderMax, 0, 0);
+    var rightWall = getWall("right", 1, 20, 2, borderMax, 0, 0);
+    var walls = [user, ai, leftWall, rightWall]
     //get floor
     var floor = getFloor("floor");
 
-    //get walls
-    var user = getWall("user", longPlayer, 1, 2, 0, -9.5, 0);
-    var ai = getWall("ai", longPlayer, 1, 2, 0, 10, 0);
-    var leftWall = getWall("left", 1, 20, 2, -borderMax, 0, 0);
-    var rightWall = getWall("right", 1, 20, 2, borderMax, 0, 0);
 
-    var walls = [user, ai, leftWall, rightWall]
+
+    
 
     //get ball
     var ball = getBall();
@@ -239,11 +226,12 @@ function init(){
     scene.add(light);
     scene.add(floor);
     scene.add(ball);
-    
     //Add walls
     for (var i = 0; i < walls.length; i++){
-        scene.add(walls[i]);
+      scene.add(walls[i]);
     }
+
+ 
     //Movement
     //-- Move user
   window.onkeydown = (e) => {
@@ -272,3 +260,4 @@ function init(){
     animate(walls, ball, scene, cam, renderer);
 }
 
+ 
