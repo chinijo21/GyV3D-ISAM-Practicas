@@ -109,13 +109,38 @@ function getBall(){
     return mesh;
 }
 
+function ballMov(ball){
+    var ballX = ball.position.x;
+    var ballY = ball.position.y;
+
+    ballX += movX * speed * angle;
+    ballY += movY * speed;
+}
+
+function collision(walls, ball){
+    //walls 0=user 1=ia 2=left 3=right
+    var originPosition = ball.position.clone();
+    var ballLength = ball.geometry.vertices.length;
+
+    for (var i = 0; i < ballLength ; i++) {
+        var localVertex = ball.geometry.vertices[i].clone();
+        var globalVertex = localVertex.applyMatrix4(ball.matrix);
+        var directionVector = globalVertex.sub(ball.position);
+        var ray = new THREE.Raycaster(originPosition, directionVector.clone().normalize());
+        var collisionResults = ray.intersectObjects(walls);
+        
+
+    }
+    
+    
+
+}
 function animate(walls, ball, scene, cam, renderer){
     //TODO
-    //get user and ai pos 
-    var user = walls[0];
-    var ai = walls[1];
-    
+    //Collisiom 0=user 1=ai
+    collision(walls, ball);
     //ball movement
+    ballMov(ball);
     //collision detection
     //cpu movement
 
@@ -176,12 +201,18 @@ function init(){
     //Add all of them
     scene.add(light);
     scene.add(floor);
-    scene.add(leftWall);
-    scene.add(rightWall);
-    scene.add(user);
-    scene.add(ai);
     scene.add(ball);
+    
+    //Add walls
+    for (var i = 0; i < walls.length; i++){
+        scene.add(walls[i]);
+    }
+    //Movement
 
     animate(walls, ball, scene, cam, renderer);
 }
 
+var movX = 0.15;
+var movY = 0.25;
+var angle = 1;
+var speed = 1;
