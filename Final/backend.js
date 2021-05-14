@@ -1,19 +1,23 @@
-//-- Speed
-var v_SpeedBall = 1;
-var v_Max = 1.5;
-var v_Min = 0.75;
-//-- Initial position x of the cpu and user
-var pos_CpuX = 0;
-var pos_UserX = 0;
-//--Ball
+//Init position of players
+var posX_ai = 0;
+var posX_user = 0;
+
+//Ball things
+var ballSpeed = 1;
+var maxSpeed = 1.5;
+var minSpeed = 0.75;
 var movX = 0.15;
 var movY = 0.25;
-var a_AngleBall = 1;
+var ballAngle = 1;
 var ballSize = 1;
 
+//Games starts when true
 var startGame = false;
+
+//Borders long
 var longPlayer = 3;
-var borderMax = 7;
+var borderMax = 6.5;
+
 function getBackground(){
     var backText = new THREE.TextureLoader().load("background.jpg");
     var backMesh = new THREE.Mesh(
@@ -127,13 +131,11 @@ function getBall(){
 
 function ballMov(ball){
     if (startGame){
-        ball.position.x += movX * v_SpeedBall * a_AngleBall;
-        ball.position.y += movY * v_SpeedBall;
+        ball.position.x += movX * ballSpeed * ballAngle;
+        ball.position.y += movY * ballSpeed;
     }
     
 }
-
-
 
 function inRange(ball, user){
     var up = -10;
