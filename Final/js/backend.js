@@ -21,7 +21,7 @@ var borderMax = 6.5;
 //TODO: Collision
 
 function getBackground(){
-    var backText = new THREE.TextureLoader().load("/background/critikal.jpg");
+    var backText = new THREE.TextureLoader().load("/textures/background/critikal.jpg");
     var backMesh = new THREE.Mesh(
         new THREE.PlaneGeometry(3, 3, 0),
         new THREE.MeshBasicMaterial({map: backText})
@@ -42,15 +42,15 @@ function texturizer(what){
     var image;
     switch(what){
         case 'floor':
-            image = new THREE.TextureLoader().load("/floor/texture.png");
+            image = new THREE.TextureLoader().load("/textures/floor/texture.png");
             break;
         
         case 'wall':
-            image = new THREE.TextureLoader().load("/walls/wood.png");
+            image = new THREE.TextureLoader().load("/textures/walls/wood.png");
             break;
 
         case 'ball':
-            image = new THREE.TextureLoader().load("/floor/texture.png");
+            image = new THREE.TextureLoader().load("/textures/floor/texture.png");
             break;
 
         case 'user':
