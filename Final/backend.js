@@ -5,9 +5,9 @@ var pos_CpuX = 0;
 //Ball things
 var ballSpeed = 1;
 var maxSpeed = 1.5;
-var v_Min = 0.75;
-var stepX = 0.15;
-var stepY = 0.25;
+var minSpeed = 0.75;
+var posX = 0.15;
+var posY = 0.25;
 var ballAngle = 1;
 var ballSize = 1;
 
@@ -120,8 +120,8 @@ function getBall(){
 
 function ballMov(ball){
     if (startGame){
-        ball.position.x += stepX * ballSpeed * ballAngle;
-        ball.position.y += stepY * ballSpeed;
+        ball.position.x += posX * ballSpeed * ballAngle;
+        ball.position.y += posY * ballSpeed;
     }
 }
 
@@ -134,14 +134,14 @@ function inRange(ball, user){
             ball.position.y = 0;
             user.position.x = 0;
             startGame = false;
-            stepY = -stepY;
+            posY = -posY;
             
             break;
         case down:
             ball.position.x = 0;
             ball.position.y = 0;
             startGame = false;
-            stepY = -stepY;
+            posY = -posY;
             user.position.x = 0;
             break;
     }
@@ -160,7 +160,7 @@ function collision(ball, walls, cpu, user) {
     if (collisionResults.length > 0 && collisionResults[0].distance < directionVector.length()) {
       switch(collisionResults[0].object.name){
         case "user":
-          stepY *= -1;
+          posY *= -1;
           pos_CpuX = cpu.position.x;
           speedBall(user, cpu,'user');
           angleBall(user, cpu, 'user', ball);
@@ -168,7 +168,7 @@ function collision(ball, walls, cpu, user) {
           break;
         
         case "ai":
-          stepY *= -1;
+          posY *= -1;
           pos_UserX = user.position.x;
           //-- Ball speed and angle
           speedBall(user, cpu,'ai');
@@ -177,12 +177,12 @@ function collision(ball, walls, cpu, user) {
           break;
 
         case "left":
-          stepX *= -1;
+          posX *= -1;
 
           break;
 
         case "right":
-          stepX *= -1;
+          posX *= -1;
           
           break;
       }
@@ -191,37 +191,50 @@ function collision(ball, walls, cpu, user) {
   }
 }
 
-function speedBall(user, cpu, typeBorder){
+function speedBall(user, cpu, wall){
   //-- Difference between previous and current position
-  if(typeBorder == 'ai'){
-    diference = Math.abs(pos_CpuX - cpu.position.x);
-  }else if (typeBorder == 'user') {
-    diference = Math.abs(pos_UserX - user.position.x);
+  var diff;
+  switch(wall){
+    case 'ai':
+      diff = Math.abs(pos_CpuX - cpu.position.x);
+      break;
+    
+    case 'user':
+      diff = Math.abs(pos_UserX - user.position.x);
+      break;
   }
-  if(diference < v_Min){
-    v_SpeedBall = v_Min;
-  }else if (diference > maxSpeed) {
+  
+  if(diff < minSpeed){
+    v_SpeedBall = minSpeed;
+  }else if (diff > maxSpeed) {
     v_SpeedBall = maxSpeed;
   }else{
-    v_SpeedBall = diference;
+    v_SpeedBall = diff;
   }
 }
 
-function angleBall(user, cpu, typeBorder, ball){
+function angleBall(user, cpu, wall, ball){
   //-- Difference between position of racket and ball
-  if(typeBorder == 'ai'){
-    distance = Math.abs(cpu.position.x - ball.position.x);
-  }else if (typeBorder == 'user') {
-    distance = Math.abs(user.position.x - ball.position.x);
+  var distance;
+  switch(wall){
+    case 'ai':
+      distance = Math.abs(cpu.position.x - ball.position.x);
+      break;
+    
+    case 'user':
+      distance = Math.abs(user.position.x - ball.position.x);
+      break;
   }
-  if(distance < v_Min){
-     a_AngleBall = v_Min;
+  
+  if(distance < minSpeed){
+     a_AngleBall = minSpeed;
   }else if (distance > maxSpeed) {
      a_AngleBall = maxSpeed;
   }else{
      a_AngleBall = distance;
   }
 }
+
 
 function aiMoves(ai, ball){
     ai.position.x = ball.position.x * 0.6;
