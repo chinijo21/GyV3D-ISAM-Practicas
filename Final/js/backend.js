@@ -21,7 +21,7 @@ var borderMax = 6.5;
 //TODO: Collision
 
 function getBackground(){
-    var backText = new THREE.TextureLoader().load("critikal.jpg");
+    var backText = new THREE.TextureLoader().load("/background/critikal.jpg");
     var backMesh = new THREE.Mesh(
         new THREE.PlaneGeometry(3, 3, 0),
         new THREE.MeshBasicMaterial({map: backText})
@@ -42,15 +42,15 @@ function texturizer(what){
     var image;
     switch(what){
         case 'floor':
-            image = new THREE.TextureLoader().load("texture.png");
+            image = new THREE.TextureLoader().load("/floor/texture.png");
             break;
         
         case 'wall':
-            image = new THREE.TextureLoader().load("wood.png");
+            image = new THREE.TextureLoader().load("/walls/wood.png");
             break;
 
         case 'ball':
-            image = new THREE.TextureLoader().load("texture.png");
+            image = new THREE.TextureLoader().load("/floor/texture.png");
             break;
 
         case 'user':
@@ -237,7 +237,8 @@ function angleBall(user, cpu, wall, ball){
 
 
 function aiMoves(ai, ball){
-    ai.position.x = ball.position.x * 0.6;
+    var level = dificulty();
+    ai.position.x = ball.position.x * level;
 
     if(ai.position.x > 7){
         ai.position.x = 7;
@@ -340,7 +341,7 @@ function init(){
       case ' ':
         startGame = true;
         //-- Read new texture of floor
-        
+        floorText(scene);
         break;
       default:
         break;

@@ -15,9 +15,21 @@ Partes implementadas:
 <head>
 <title>la porongada</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/103/three.min.js"></script>
-<script src = 'backend.js'></script>
+<script src = '/js/backend.js'></script>
+<script src = '/js/aesthetic.js'></script>
 </head>
 <body onload="init()">
+    <div id = "difficultities">
+        <p>SELECT YOUR LEVEL</p>
+        <input type="radio" name="diff" value="easy" checked> <b>juegatela</b>
+        <input type="radio" name="diff" value="medium"> <b>cuidado</b>
+        <input type="radio" name="diff" value="hard"> <b>te pasaste</b>
+      </div>
+      <div id = "floors">
+        <p>SELECT YOUR LEVEL</p>
+        <input type="radio" name="floor" value="void" checked> <b>Vacío</b>
+        <input type="radio" name="floor" value="street"> <b>Calle</b>
+      </div>
 </body>
 
 </html>
