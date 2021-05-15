@@ -1,13 +1,13 @@
 //Init position of players
-var posX_ai = 0;
-var posX_user = 0;
+var pos_ai = 0;
+var pos_CpuX = 0;
 
 //Ball things
 var ballSpeed = 1;
 var maxSpeed = 1.5;
-var minSpeed = 0.75;
-var movX = 0.15;
-var movY = 0.25;
+var v_Min = 0.75;
+var stepX = 0.15;
+var stepY = 0.25;
 var ballAngle = 1;
 var ballSize = 1;
 
@@ -21,9 +21,9 @@ var borderMax = 6.5;
 //TODO: Collision
 
 function getBackground(){
-    var backText = new THREE.TextureLoader().load("background.jpg");
+    var backText = new THREE.TextureLoader().load("critikal.jpg");
     var backMesh = new THREE.Mesh(
-        new THREE.PlaneGeometry(3, 2, 0),
+        new THREE.PlaneGeometry(3, 3, 0),
         new THREE.MeshBasicMaterial({map: backText})
     );
     backMesh.material.depthTest = false;
@@ -76,7 +76,7 @@ function getLight(){
     light.castShadow = true;
 
     light.shadow.camera.near = 0;
-    light.shadow.camera.top = 10;
+    light.shadow.camera.ai = 10;
     light.shadow.camera.bottom = -10;
     light.shadow.camera.left = -8;
     light.shadow.camera.right = 5;
@@ -90,7 +90,7 @@ function getLight(){
 
 function getFloor(floor){
     var geometry = new THREE.PlaneGeometry(15,20);
-    var floorFinal = new THREE.Mesh(geometry, texturizer('floor'));
+    var floorFinal = new THREE.Mesh(geometry, texturizer(floor));
     floorFinal.receiveShadow = true;
 
     return floorFinal;
@@ -120,8 +120,8 @@ function getBall(){
 
 function ballMov(ball){
     if (startGame){
-        ball.position.x += movX * ballSpeed * ballAngle;
-        ball.position.y += movY * ballSpeed;
+        ball.position.x += stepX * ballSpeed * ballAngle;
+        ball.position.y += stepY * ballSpeed;
     }
 }
 
@@ -134,17 +134,93 @@ function inRange(ball, user){
             ball.position.y = 0;
             user.position.x = 0;
             startGame = false;
-            movY = -movY;
+            stepY = -stepY;
             
             break;
         case down:
             ball.position.x = 0;
             ball.position.y = 0;
             startGame = false;
-            movY = -movY;
+            stepY = -stepY;
             user.position.x = 0;
             break;
     }
+}
+
+function collision(ball, walls, cpu, user) {
+  var originPosition = ball.position.clone();
+
+  //!! https://github.com/stemkoski/stemkoski.github.com/blob/master/Three.js/Collision-Detection.html
+  for (var vertexIndex = 0; vertexIndex < ball.geometry.vertices.length; vertexIndex++) {
+    var localVertex = ball.geometry.vertices[vertexIndex].clone();
+    var globalVertex = localVertex.applyMatrix4(ball.matrix);
+    var directionVector = globalVertex.sub(ball.position);
+    var ray = new THREE.Raycaster(originPosition, directionVector.clone().normalize());
+    var collisionResults = ray.intersectObjects(walls);
+    if (collisionResults.length > 0 && collisionResults[0].distance < directionVector.length()) {
+      switch(collisionResults[0].object.name){
+        case "user":
+          stepY *= -1;
+          pos_CpuX = cpu.position.x;
+          speedBall(user, cpu,'user');
+          angleBall(user, cpu, 'user', ball);
+
+          break;
+        
+        case "ai":
+          stepY *= -1;
+          pos_UserX = user.position.x;
+          //-- Ball speed and angle
+          speedBall(user, cpu,'ai');
+          angleBall(user, cpu, 'ai', ball);
+
+          break;
+
+        case "left":
+          stepX *= -1;
+
+          break;
+
+        case "right":
+          stepX *= -1;
+          
+          break;
+      }
+      break;
+    }
+  }
+}
+
+function speedBall(user, cpu, typeBorder){
+  //-- Difference between previous and current position
+  if(typeBorder == 'ai'){
+    diference = Math.abs(pos_CpuX - cpu.position.x);
+  }else if (typeBorder == 'user') {
+    diference = Math.abs(pos_UserX - user.position.x);
+  }
+  if(diference < v_Min){
+    v_SpeedBall = v_Min;
+  }else if (diference > maxSpeed) {
+    v_SpeedBall = maxSpeed;
+  }else{
+    v_SpeedBall = diference;
+  }
+}
+
+function angleBall(user, cpu, typeBorder, ball){
+  //-- Difference between position of racket and ball
+  if(typeBorder == 'ai'){
+    distance = Math.abs(cpu.position.x - ball.position.x);
+  }else if (typeBorder == 'user') {
+    distance = Math.abs(user.position.x - ball.position.x);
+  }
+  if(distance < v_Min){
+     a_AngleBall = v_Min;
+  }else if (distance > maxSpeed) {
+     a_AngleBall = maxSpeed;
+  }else{
+     a_AngleBall = distance;
+  }
 }
 
 function aiMoves(ai, ball){
@@ -161,6 +237,7 @@ function aiMoves(ai, ball){
 function animate(walls, ball, scene, cam, renderer){
     //TODO
     //Collisiom 0=user 1=ai
+    collision(ball, walls, walls[1], walls[0])
     //ball movement
     inRange(ball, walls[0]);
     ballMov(ball);
@@ -207,8 +284,8 @@ function init(){
     var light = getLight();
 
     //get walls
-    var user = getWall("top", longPlayer, 1, 2, 0, -9.5, 0);
-    var ai = getWall("down", longPlayer, 1, 2, 0, 10, 0);
+    var user = getWall("ai", longPlayer, 1, 2, 0, -9.5, 0);
+    var ai = getWall("user", longPlayer, 1, 2, 0, 10, 0);
     var leftWall = getWall("left", 1, 20, 2, -borderMax, 0, 0);
     var rightWall = getWall("right", 1, 20, 2, borderMax, 0, 0);
     var walls = [user, ai, leftWall, rightWall]
@@ -260,4 +337,9 @@ function init(){
     animate(walls, ball, scene, cam, renderer);
 }
 
- 
+
+
+  
+  
+
+  
