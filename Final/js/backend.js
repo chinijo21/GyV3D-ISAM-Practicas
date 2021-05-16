@@ -18,7 +18,11 @@ var startGame = false;
 var longPlayer = 3;
 var borderMax = 6.5;
 
-//TODO: Collision
+//counter-strike
+var userPoints = 0;
+var aiPoints = 0;
+var scoreBoard = 'CPU: 0 - USER: 0';
+
 
 function getBackground(){
     var backText = new THREE.TextureLoader().load("/textures/background/critikal.jpg");
@@ -125,7 +129,7 @@ function ballMov(ball){
     }
 }
 
-function inRange(ball, user){
+function inRange(ball, user, scene){
     var up = -10;
     var down = 10;
     switch(ball.position.y){
@@ -135,7 +139,9 @@ function inRange(ball, user){
             user.position.x = 0;
             startGame = false;
             posY = -posY;
-            
+            aiPoints += 1;
+            var scoreBoard = (`CPU: ${aiPoints} - USER: ${userPoints}`);
+            text('score', scene);
             break;
         case down:
             ball.position.x = 0;
@@ -143,6 +149,9 @@ function inRange(ball, user){
             startGame = false;
             posY = -posY;
             user.position.x = 0;
+            userPoints += 1
+            var scoreBoard = (`CPU: ${aiPoints} - USER: ${userPoints}`);
+            text('score', scene);
             break;
     }
 }
@@ -247,13 +256,40 @@ function aiMoves(ai, ball){
     }
     
 }
-
+function text(who, scene){
+  var fonts = new THREE.FontLoader();
+  fonts.load('/fonts/Distortion Dos Analogue_Regular.json', function ( font ){
+    var selectedObject = scene.getObjectByName(who);
+    if(selectedObject){
+      scene.remove(selectedObject);
+    }
+    var geometry = new THREE.TextGeometry(scoreBoard, {
+      font: font,
+      size: 4,
+      height: 0.5,
+      curveSegments: 12,
+      bevelEnabled: false,
+      bevelThickness: 0.1,
+      bevelSize: 0.1,
+      bevelSegments: 0.1
+    });background.jpg
+    var texture = new THREE.TextureLoader().load("/textures/background/background.jpg")
+    var material = new THREE.MeshBasicMaterial({
+     map : texture
+    });
+    var text = new THREE.Mesh(geometry, material);
+    text.name = who;
+    text.position.set(-19,40,0);
+    text.rotation.x = -5;
+    scene.add(text);
+  });
+}
 function animate(walls, ball, scene, cam, renderer){
     //TODO
     //Collisiom 0=user 1=ai
     collision(ball, walls, walls[1], walls[0])
     //ball movement
-    inRange(ball, walls[0]);
+    inRange(ball, walls[0], scene);
     ballMov(ball);
 
     //cpu movement
@@ -349,6 +385,7 @@ function init(){
   }
 
     animate(walls, ball, scene, cam, renderer);
+    text('score', scene);
 }
 
 
