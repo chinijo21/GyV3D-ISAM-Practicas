@@ -34,3 +34,33 @@ function floorText(scene){
     
 
 }
+
+function changeScore(who, scene){
+    scoreBoard = (`AI: ${aiPoints} - USER: ${userPoints}`);
+    var fonts = new THREE.FontLoader();
+    fonts.load('/fonts/Distortion Dos Analogue_Regular.json', function ( font ){
+      var selectedObject = scene.getObjectByName(who);
+      if(selectedObject){
+        scene.remove(selectedObject);
+      }
+      var geometry = new THREE.TextGeometry(scoreBoard, {
+        font: font,
+        size: 4,
+        height: 0.5,
+        curveSegments: 12,
+        bevelEnabled: false,
+        bevelThickness: 0.1,
+        bevelSize: 0.1,
+        bevelSegments: 0.1
+      });background.jpg
+      var texture = new THREE.TextureLoader().load("/textures/background/background.jpg")
+      var material = new THREE.MeshBasicMaterial({
+       map : texture
+      });
+      var text = new THREE.Mesh(geometry, material);
+      text.name = who;
+      text.position.set(-19,40,0);
+      text.rotation.x = -5;
+      scene.add(text);
+    });
+  }
