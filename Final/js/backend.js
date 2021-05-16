@@ -21,7 +21,11 @@ var borderMax = 6.5;
 //counter-strike
 var userPoints = 0;
 var aiPoints = 0;
-var scoreBoard = 'AI: 0 - USER: 0';
+var total = 5;
+var scoreBoard = 'AI: 0 - USER: 0 \n      VIDAS 5';
+
+//Skin change
+var tex_floor;
 
 
 function getBackground(){
@@ -46,7 +50,9 @@ function texturizer(what){
     var image;
     switch(what){
         case 'floor':
-            image = new THREE.TextureLoader().load("/textures/floor/texture.png");
+            image = new THREE.TextureLoader().load("/textures/floor/concrete.jpg");
+            
+            
             break;
         
         case 'wall':
@@ -54,13 +60,15 @@ function texturizer(what){
             break;
 
         case 'ball':
-            image = new THREE.TextureLoader().load("/textures/floor/texture.png");
+            image = new THREE.TextureLoader().load("/textures/ball/basket.jpg");
             break;
 
         case 'user':
+          image = new THREE.TextureLoader().load("/textures/walls/user.jpg");
             break;
           
         case 'ai':
+          image = new THREE.TextureLoader().load("/textures/walls/user.jpg");
             break;
                 
         default:
@@ -104,7 +112,12 @@ function getWall(which, x, y, z, posX, posY, posZ){
     var geometry = new THREE.BoxGeometry(x, y, z);
     //var mesh;
     //TODO: get some textures
-    var mesh = new THREE.Mesh(geometry, texturizer('wall'));
+    if(which == 'user'){
+      var mesh = new THREE.Mesh(geometry, texturizer('user'));
+    }else{
+      var mesh = new THREE.Mesh(geometry, texturizer('wall'));
+    }
+    
     mesh.receiveShadow = true;
     mesh.position.set(posX, posY, posZ);
     mesh.name = which;
@@ -140,6 +153,7 @@ function inRange(ball, user, scene){
             startGame = false;
             posY = -posY;
             aiPoints += 1;
+            total -= 1;
             changeScore('score', scene);
             break;
         case down:
@@ -148,10 +162,16 @@ function inRange(ball, user, scene){
             startGame = false;
             posY = -posY;
             user.position.x = 0;
-            userPoints += 1
+            userPoints += 1;
+            total -= 1;
             changeScore('score', scene);
             break;
     }
+
+  if(total==0){
+    startGame = false;
+    changeScore('score', scene);
+  }
 }
 
 function collision(ball, walls, cpu, user) {
@@ -212,11 +232,11 @@ function speedBall(user, cpu, wall){
   }
   
   if(diff < minSpeed){
-    v_SpeedBall = minSpeed;
+    ballSpeed = minSpeed;
   }else if (diff > maxSpeed) {
-    v_SpeedBall = maxSpeed;
+    ballSpeed = maxSpeed;
   }else{
-    v_SpeedBall = diff;
+    ballSpeed = diff;
   }
 }
 
@@ -234,17 +254,18 @@ function angleBall(user, cpu, wall, ball){
   }
   
   if(distance < minSpeed){
-     a_AngleBall = minSpeed;
+     ballAngle = minSpeed;
   }else if (distance > maxSpeed) {
-     a_AngleBall = maxSpeed;
+     ballAngle = maxSpeed;
   }else{
-     a_AngleBall = distance;
+     ballAngle = distance;
   }
 }
 
 
 function aiMoves(ai, ball){
-    var level = dificulty();
+    var movement = dificulty();
+    var level = movement;
     ai.position.x = ball.position.x * level;
 
     if(ai.position.x > 7){
@@ -347,6 +368,11 @@ function init(){
         break;
       case ' ':
         startGame = true;
+        if(total == 0){
+          total = 5;
+          aiPoints = 0;
+          userPoints = 0;
+        }
         //-- Read new texture of floor
         floorText(scene);
         break;

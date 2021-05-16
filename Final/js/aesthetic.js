@@ -1,27 +1,31 @@
 function dificulty(){
     var level;
+    var probError;
+    var min = 0;
     var tick = document.querySelector('input[name="diff"]:checked').value;
 
     switch(tick){
         case 'easy':
             level = 0.2;
+            
             break;
         
         case 'medium':
             level = 0.65;
+            
             break;
         
         case 'hard':
             level = 0.95;
+            
             break;
     }
-
     return level;
 }
 
 function floorText(scene){
     var current = scene.getObjectByName('floor');
-    var tick = document.querySelector('input[name="floor"]:checked').value;
+    //var tick = document.querySelector('input[name="floor"]:checked').value;
 
     if(current){
         scene.remove(current);
@@ -36,7 +40,7 @@ function floorText(scene){
 }
 
 function changeScore(who, scene){
-    scoreBoard = (`AI: ${aiPoints} - USER: ${userPoints}`);
+    scoreBoard = (`AI: ${aiPoints} - USER: ${userPoints} \n     VIDAS ${total} `);
     var fonts = new THREE.FontLoader();
     fonts.load('/fonts/Distortion Dos Analogue_Regular.json', function ( font ){
       var selectedObject = scene.getObjectByName(who);
