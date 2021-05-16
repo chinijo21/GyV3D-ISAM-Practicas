@@ -7,36 +7,17 @@ function dificulty(){
     switch(tick){
         case 'easy':
             level = 0.2;
-            
             break;
         
         case 'medium':
-            level = 0.65;
-            
+            level = 0.6;
             break;
         
         case 'hard':
-            level = 0.95;
-            
+            level = 0.85;
             break;
     }
     return level;
-}
-
-function floorText(scene){
-    var current = scene.getObjectByName('floor');
-    //var tick = document.querySelector('input[name="floor"]:checked').value;
-
-    if(current){
-        scene.remove(current);
-    }
-
-    textFloor = document.querySelector('input[name="floor"]:checked').value;
-    var floor = getFloor('floor');
-    scene.add(floor);
-
-    
-
 }
 
 function changeScore(who, scene){
@@ -56,7 +37,7 @@ function changeScore(who, scene){
         bevelThickness: 0.1,
         bevelSize: 0.1,
         bevelSegments: 0.1
-      });background.jpg
+      });
       var texture = new THREE.TextureLoader().load("/textures/background/background.jpg")
       var material = new THREE.MeshBasicMaterial({
        map : texture
@@ -67,4 +48,14 @@ function changeScore(who, scene){
       text.rotation.x = -5;
       scene.add(text);
     });
-  }
+}
+
+function getSens(){
+  var sens = document.getElementById("sen").value;
+  return sens;
+}
+
+function getLifes(){
+  var lifes = document.getElementById("lifes").value
+  return lifes;
+}

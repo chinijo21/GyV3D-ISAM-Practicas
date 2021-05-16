@@ -1,6 +1,7 @@
 //Init position of players
 var pos_ai = 0;
 var pos_CpuX = 0;
+//var sens = getSens();
 
 //Ball things
 var ballSpeed = 1;
@@ -23,10 +24,6 @@ var userPoints = 0;
 var aiPoints = 0;
 var total = 5;
 var scoreBoard = 'AI: 0 - USER: 0 \n      VIDAS 5';
-
-//Skin change
-var tex_floor;
-
 
 function getBackground(){
     var backText = new THREE.TextureLoader().load("/textures/background/critikal.jpg");
@@ -84,7 +81,7 @@ function texturizer(what){
 
 function getLight(){
     var light = new THREE.DirectionalLight();
-    light.position.set(2.5, 4, 3);
+    light.position.set(5,-4,4);
     light.castShadow = true;
 
     light.shadow.camera.near = 0;
@@ -145,33 +142,33 @@ function ballMov(ball){
 function inRange(ball, user, scene){
     var up = -10;
     var down = 10;
-    switch(ball.position.y){
-        case up:
-            ball.position.x = 0;
-            ball.position.y = 0;
-            user.position.x = 0;
-            startGame = false;
-            posY = -posY;
-            aiPoints += 1;
-            total -= 1;
-            changeScore('score', scene);
-            break;
-        case down:
-            ball.position.x = 0;
-            ball.position.y = 0;
-            startGame = false;
-            posY = -posY;
-            user.position.x = 0;
-            userPoints += 1;
-            total -= 1;
-            changeScore('score', scene);
-            break;
-    }
 
-  if(total==0){
-    startGame = false;
-    changeScore('score', scene);
-  }
+    if(total==0){
+      startGame = false;
+      changeScore('score', scene);
+    }
+    //Cant put a switch bc it wont work
+    //since my ball goes to fast :(
+    if(ball.position.y <= up){
+      ball.position.x = 0;
+      ball.position.y = 0;
+      user.position.x = 0;
+      startGame = false;
+      posY = -posY;
+      aiPoints += 1;
+      total -= 1;
+      changeScore('score', scene);
+    }else if(ball.position.y >= down){
+      console.log("SE PASO");
+      ball.position.x = 0;
+      ball.position.y = 0;
+      startGame = false;
+      posY = -posY;
+      user.position.x = 0;
+      userPoints += 1;
+      total -= 1;
+      changeScore('score', scene);
+    }
 }
 
 function collision(ball, walls, cpu, user) {
@@ -200,7 +197,7 @@ function collision(ball, walls, cpu, user) {
           //-- Ball speed and angle
           speedBall(user, cpu,'ai');
           angleBall(user, cpu, 'ai', ball);
-
+          
           break;
 
         case "left":
@@ -219,7 +216,6 @@ function collision(ball, walls, cpu, user) {
 }
 
 function speedBall(user, cpu, wall){
-  //-- Difference between previous and current position
   var diff;
   switch(wall){
     case 'ai':
@@ -262,26 +258,28 @@ function angleBall(user, cpu, wall, ball){
   }
 }
 
-
 function aiMoves(ai, ball){
     var movement = dificulty();
     var level = movement;
     ai.position.x = ball.position.x * level;
 
-    if(ai.position.x > 7){
+    //A donde vas a donde vas
+    if(ai.position.x >= 7){
         ai.position.x = 7;
-    }else if(ai.position.x < -7){
+    }else if(ai.position.x <= -7){
         ai.position.x = -7;
     }
     
 }
 
 function animate(walls, ball, scene, cam, renderer){
-    //TODO
     //Collisiom 0=user 1=ai
     collision(ball, walls, walls[1], walls[0])
-    //ball movement
+
+    //Checks range and adds points
     inRange(ball, walls[0], scene);
+
+    //ball movement
     ballMov(ball);
 
     //cpu movement
@@ -331,13 +329,10 @@ function init(){
     var leftWall = getWall("left", 1, 20, 2, -borderMax, 0, 0);
     var rightWall = getWall("right", 1, 20, 2, borderMax, 0, 0);
     var walls = [user, ai, leftWall, rightWall]
+    
     //get floor
     var floor = getFloor("floor");
-
-
-
     
-
     //get ball
     var ball = getBall();
 
@@ -345,44 +340,45 @@ function init(){
     scene.add(light);
     scene.add(floor);
     scene.add(ball);
+
     //Add walls
     for (var i = 0; i < walls.length; i++){
       scene.add(walls[i]);
     }
 
- 
-    //Movement
-    //-- Move user
   window.onkeydown = (e) => {
     e.preventDefault();
     switch (e.key) {
       case 'ArrowLeft':
         if(user.position.x > -5){
-          user.position.x -= 0.35;
+
+          user.position.x -= 0.35 * getSens();
         }
         break;
       case 'ArrowRight':
         if(user.position.x < 5){
-          user.position.x += 0.35;
+          user.position.x += 0.35 * getSens();
         }
         break;
       case ' ':
         startGame = true;
+        total = getLifes();
+        changeScore('score', scene);
         if(total == 0){
-          total = 5;
+          total = getLifes();
           aiPoints = 0;
           userPoints = 0;
+          changeScore('score', scene);
+          startGame = false;
         }
-        //-- Read new texture of floor
-        floorText(scene);
         break;
       default:
         break;
     }
   }
-
-    animate(walls, ball, scene, cam, renderer);
-    changeScore('score', scene);
+  
+  animate(walls, ball, scene, cam, renderer);
+  changeScore('score', scene);
 }
 
 

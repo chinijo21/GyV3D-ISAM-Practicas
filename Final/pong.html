@@ -1,7 +1,7 @@
 <!--
 Partes implementadas:
 - Funcionalidad básica: todo ok
-- Funcionalidad avanzada: TODO: angulo, velocidad y desplazamiento aleatorio
+- Funcionalidad avanzada: TODO: possibility of win
 - Funcionalidad extra: texto 3D y dificultad
 -->
 
@@ -22,7 +22,13 @@ Partes implementadas:
         <input type="radio" name="diff" value="medium"> <b>cuidado</b>
         <input type="radio" name="diff" value="hard"> <b>te pasaste</b>
       </div>
-      <div id = "background">
+      <div id = "light">
+        <p>SENSIBILITY OF KEYS</p>
+        <input type="range" id="sen" min="0.25" max="2" value="1" step="0.1"><br>
+      </div>
+      <div>
+        <p>NUMBER OF LIFES <br> 1-10 lifes</p>
+        <input type="range" id="lifes" min="1" max="10" value="5" step="1"><b></b>
       </div>
 </body>
 
