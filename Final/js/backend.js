@@ -23,10 +23,11 @@ var borderMax = 6.5;
 var userPoints = 0;
 var aiPoints = 0;
 var total = 5;
+var pasos = total;
 var scoreBoard = 'AI: 0 - USER: 0 \n      VIDAS 5';
 
 function getBackground(){
-    var backText = new THREE.TextureLoader().load("/textures/background/critikal.jpg");
+    var backText = new THREE.TextureLoader().load("/textures/background/si.jpg");
     var backMesh = new THREE.Mesh(
         new THREE.PlaneGeometry(3, 3, 0),
         new THREE.MeshBasicMaterial({map: backText})
@@ -65,7 +66,7 @@ function texturizer(what){
             break;
           
         case 'ai':
-          image = new THREE.TextureLoader().load("/textures/walls/user.jpg");
+          image = new THREE.TextureLoader().load("/textures/walls/ai.jpg");
             break;
                 
         default:
@@ -111,6 +112,8 @@ function getWall(which, x, y, z, posX, posY, posZ){
     //TODO: get some textures
     if(which == 'user'){
       var mesh = new THREE.Mesh(geometry, texturizer('user'));
+    }else if(which == 'ai'){
+      var mesh = new THREE.Mesh(geometry, texturizer('ai'));
     }else{
       var mesh = new THREE.Mesh(geometry, texturizer('wall'));
     }
@@ -362,7 +365,9 @@ function init(){
         break;
       case ' ':
         startGame = true;
-        total = getLifes();
+        if (pasos == 1){
+          total = getLifes();
+        }
         changeScore('score', scene);
         if(total == 0){
           total = getLifes();

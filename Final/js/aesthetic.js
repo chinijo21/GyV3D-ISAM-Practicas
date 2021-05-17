@@ -23,6 +23,7 @@ function dificulty(){
 function changeScore(who, scene){
     scoreBoard = (`AI: ${aiPoints} - USER: ${userPoints} \n     VIDAS ${total} `);
     var fonts = new THREE.FontLoader();
+    pasos -= 1
     fonts.load('/fonts/Distortion Dos Analogue_Regular.json', function ( font ){
       var selectedObject = scene.getObjectByName(who);
       if(selectedObject){
@@ -38,7 +39,7 @@ function changeScore(who, scene){
         bevelSize: 0.1,
         bevelSegments: 0.1
       });
-      var texture = new THREE.TextureLoader().load("/textures/background/background.jpg")
+      var texture = new THREE.TextureLoader().load("/textures/background/critikal.jpg")
       var material = new THREE.MeshBasicMaterial({
        map : texture
       });
