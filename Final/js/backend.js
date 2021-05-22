@@ -1,8 +1,3 @@
-//Init position of players
-var pos_ai = 0;
-var pos_CpuX = 0;
-//var sens = getSens();
-
 //Ball things
 var ballSpeed = 1;
 var maxSpeed = 1.5;
@@ -15,6 +10,10 @@ var ballSize = 1;
 //Games starts when true
 var startGame = false;
 
+//Init position of players
+var pos_ai = 0;
+var pos_player = 0;
+
 //Borders long
 var longPlayer = 3;
 var borderMax = 6.5;
@@ -22,8 +21,8 @@ var borderMax = 6.5;
 //counter-strike
 var userPoints = 0;
 var aiPoints = 0;
-var total = 5;
-var pasos = total;
+var total = 0;
+var pasos = 0;
 var scoreBoard = 'AI: 0 - USER: 0 \n      VIDAS 5';
 
 function getBackground(){
@@ -188,7 +187,7 @@ function collision(ball, walls, cpu, user) {
       switch(collisionResults[0].object.name){
         case "user":
           posY *= -1;
-          pos_CpuX = cpu.position.x;
+          pos_player = cpu.position.x;
           speedBall(user, cpu,'user');
           angleBall(user, cpu, 'user', ball);
 
@@ -197,7 +196,6 @@ function collision(ball, walls, cpu, user) {
         case "ai":
           posY *= -1;
           pos_UserX = user.position.x;
-          //-- Ball speed and angle
           speedBall(user, cpu,'ai');
           angleBall(user, cpu, 'ai', ball);
           
@@ -222,7 +220,7 @@ function speedBall(user, cpu, wall){
   var diff;
   switch(wall){
     case 'ai':
-      diff = Math.abs(pos_CpuX - cpu.position.x);
+      diff = Math.abs(pos_player - cpu.position.x);
       break;
     
     case 'user':
@@ -263,14 +261,26 @@ function angleBall(user, cpu, wall, ball){
 
 function aiMoves(ai, ball){
     var movement = dificulty();
-    var level = movement;
-    ai.position.x = ball.position.x * level;
+    var min = 0.1;
+    var max = 1.0000000001;
+    //Retorna un número aleatorio entre min (incluido) y max (excluido)
+    var error = Math.random() * (max - min) + min
+    console.log(error);
+    var seCaga = 1;
+    if (error > movement.max || error < movement.max){
+      seCaga = 0.0001;
+      console.log("SE CAGO");
+    }else{
+      seCaga = 1;
+    }
+    console.log(seCaga)
+    ai.position.x = ball.position.x * (movement.velocity-(1/2*seCaga));
 
     //A donde vas a donde vas
-    if(ai.position.x >= 7){
-        ai.position.x = 7;
-    }else if(ai.position.x <= -7){
-        ai.position.x = -7;
+    if(ai.position.x >= borderMax){
+        ai.position.x = borderMax;
+    }else if(ai.position.x <= -borderMax){
+        ai.position.x = -borderMax;
     }
     
 }
@@ -365,8 +375,9 @@ function init(){
         break;
       case ' ':
         startGame = true;
-        if (pasos == 1){
+        if (pasos == 0){
           total = getLifes();
+          pasos = total;
         }
         changeScore('score', scene);
         if(total == 0){

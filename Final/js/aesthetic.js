@@ -1,23 +1,25 @@
 function dificulty(){
-    var level;
-    var probError;
-    var min = 0;
+    var velocity;
+    var max;
     var tick = document.querySelector('input[name="diff"]:checked').value;
 
     switch(tick){
         case 'easy':
-            level = 0.2;
+            velocity = 0.2;
+            max = 0.6;
             break;
         
         case 'medium':
-            level = 0.6;
+            velocity = 0.7;
+            max = 1.5;
             break;
         
         case 'hard':
-            level = 0.85;
+            velocity = 0.8;
+            max = 2;
             break;
     }
-    return level;
+    return {velocity, max};
 }
 
 function changeScore(who, scene){
