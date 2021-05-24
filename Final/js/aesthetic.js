@@ -5,17 +5,17 @@ function dificulty(){
 
     switch(tick){
         case 'easy':
-            velocity = 0.15;
+            velocity = 0.30;
             max = 7;
             break;
         
         case 'medium':
-            velocity = 0.30;
+            velocity = 0.50;
             max = 5;
             break;
         
         case 'hard':
-            velocity = 0.6;
+            velocity = 0.70;
             max = 3;
             break;
     }

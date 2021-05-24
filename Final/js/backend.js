@@ -26,7 +26,7 @@ var pasos = 0;
 var scoreBoard = 'AI: 0 - USER: 0 \n      VIDAS 5';
 
 var movement;
-
+var rand;
 function getBackground(){
     var backText = new THREE.TextureLoader().load("/textures/background/si.jpg");
     var backMesh = new THREE.Mesh(
@@ -176,7 +176,7 @@ function inRange(ball, user, scene){
 function collision(ball, walls, ai, user) {
   var originPosition = ball.position.clone();
   var ceil = movement.max;
-  var rand = Math.floor(Math.random()* 10);
+  
 
 
   //!! https://github.com/stemkoski/stemkoski.github.com/blob/master/Three.js/Collision-Detection.html
@@ -284,6 +284,7 @@ function aiMoves(ai, ball){
 }
 
 function animate(walls, ball, scene, cam, renderer){
+    rand = Math.floor(Math.random()* 10);
     //Collisiom 0=user 1=ai
     collision(ball, walls, walls[1], walls[0])
 
