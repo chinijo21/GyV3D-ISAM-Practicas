@@ -25,6 +25,8 @@ var total = 0;
 var pasos = 0;
 var scoreBoard = 'AI: 0 - USER: 0 \n      VIDAS 5';
 
+var movement;
+
 function getBackground(){
     var backText = new THREE.TextureLoader().load("/textures/background/si.jpg");
     var backMesh = new THREE.Mesh(
@@ -48,8 +50,6 @@ function texturizer(what){
     switch(what){
         case 'floor':
             image = new THREE.TextureLoader().load("/textures/floor/concrete.jpg");
-            
-            
             break;
         
         case 'wall':
@@ -173,8 +173,11 @@ function inRange(ball, user, scene){
     }
 }
 
-function collision(ball, walls, cpu, user) {
+function collision(ball, walls, ai, user) {
   var originPosition = ball.position.clone();
+  var ceil = movement.max;
+  var rand = Math.floor(Math.random()* 10);
+
 
   //!! https://github.com/stemkoski/stemkoski.github.com/blob/master/Three.js/Collision-Detection.html
   for (var vertexIndex = 0; vertexIndex < ball.geometry.vertices.length; vertexIndex++) {
@@ -185,19 +188,27 @@ function collision(ball, walls, cpu, user) {
     var collisionResults = ray.intersectObjects(walls);
     if (collisionResults.length > 0 && collisionResults[0].distance < directionVector.length()) {
       switch(collisionResults[0].object.name){
-        case "user":
+        //For some reason user= cpu and cpu = user
+        case "ai":
           posY *= -1;
-          pos_player = cpu.position.x;
-          speedBall(user, cpu,'user');
-          angleBall(user, cpu, 'user', ball);
+          pos_player = user.position.x;
+          speedBall(user, ai,'ai');
+          angleBall(user, ai, 'ai', ball);
+          speedBall(user, ai,'user');
+          angleBall(user, ai, 'user', ball);
 
           break;
         
-        case "ai":
+        case "user":
+          console.log("ROBOT");
           posY *= -1;
-          pos_UserX = user.position.x;
-          speedBall(user, cpu,'ai');
-          angleBall(user, cpu, 'ai', ball);
+          if(rand <= ceil){
+            console.log("se caga");
+            pos_ai = ai.position.x * -1;
+          }else{
+            pos_ai = ai.position.x;
+          }
+
           
           break;
 
@@ -220,11 +231,11 @@ function speedBall(user, cpu, wall){
   var diff;
   switch(wall){
     case 'ai':
-      diff = Math.abs(pos_player - cpu.position.x);
+      diff = Math.abs(pos_ai - cpu.position.x);
       break;
     
     case 'user':
-      diff = Math.abs(pos_UserX - user.position.x);
+      diff = Math.abs(pos_player - user.position.x);
       break;
   }
   
@@ -260,22 +271,9 @@ function angleBall(user, cpu, wall, ball){
 }
 
 function aiMoves(ai, ball){
-    var movement = dificulty();
-    var min = 0.1;
-    var max = 1.0000000001;
+    
     //Retorna un número aleatorio entre min (incluido) y max (excluido)
-    var error = Math.random() * (max - min) + min
-    console.log(error);
-    var seCaga = 1;
-    if (error > movement.max || error < movement.max){
-      seCaga = 0.0001;
-      console.log("SE CAGO");
-    }else{
-      seCaga = 1;
-    }
-    console.log(seCaga)
-    ai.position.x = ball.position.x * (movement.velocity-(1/2*seCaga));
-
+    ai.position.x = ball.position.x * movement.velocity;
     //A donde vas a donde vas
     if(ai.position.x >= borderMax){
         ai.position.x = borderMax;
@@ -306,6 +304,7 @@ function animate(walls, ball, scene, cam, renderer){
 
 function init(){
     //Define scene + size
+    movement = dificulty();
     var scene = new THREE.Scene();
     var sceneWidth = window.innerWidth;
     var sceneHeight = window.innerHeight;
@@ -339,8 +338,8 @@ function init(){
     //get walls
     var user = getWall("ai", longPlayer, 1, 2, 0, -9.5, 0);
     var ai = getWall("user", longPlayer, 1, 2, 0, 10, 0);
-    var leftWall = getWall("left", 1, 20, 2, -borderMax, 0, 0);
-    var rightWall = getWall("right", 1, 20, 2, borderMax, 0, 0);
+    var leftWall = getWall("left", 1.5, 20, 1, -borderMax, 0, 0.5);
+    var rightWall = getWall("right", 1.5 , 20, 1, borderMax, 0, 0.5);
     var walls = [user, ai, leftWall, rightWall]
     
     //get floor
@@ -359,21 +358,21 @@ function init(){
       scene.add(walls[i]);
     }
 
-  window.onkeydown = (e) => {
-    e.preventDefault();
-    switch (e.key) {
-      case 'ArrowLeft':
+    document.onkeydown = function(ev){
+    switch (ev.keyCode) {
+      case 37:
         if(user.position.x > -5){
 
           user.position.x -= 0.35 * getSens();
         }
         break;
-      case 'ArrowRight':
+      case 39:
         if(user.position.x < 5){
           user.position.x += 0.35 * getSens();
         }
         break;
-      case ' ':
+      case 32:
+        movement = dificulty();
         startGame = true;
         if (pasos == 0){
           total = getLifes();
