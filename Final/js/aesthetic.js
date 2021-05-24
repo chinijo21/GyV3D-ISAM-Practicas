@@ -1,25 +1,29 @@
 function dificulty(){
     var velocity;
     var max;
+    var multiplier;
     var tick = document.querySelector('input[name="diff"]:checked').value;
 
     switch(tick){
         case 'easy':
             velocity = 0.30;
             max = 7;
+            multiplier = 1;
             break;
         
         case 'medium':
             velocity = 0.50;
             max = 5;
+            multiplier = 2;
             break;
         
         case 'hard':
             velocity = 0.70;
             max = 3;
+            multiplier = 3;
             break;
     }
-    return {velocity, max};
+    return {velocity, max, multiplier};
 }
 
 function changeScore(who, scene){

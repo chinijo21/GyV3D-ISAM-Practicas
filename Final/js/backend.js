@@ -27,6 +27,8 @@ var scoreBoard = 'AI: 0 - USER: 0 \n      VIDAS 5';
 
 var movement;
 var rand;
+var veloDiv = 1;
+
 function getBackground(){
     var backText = new THREE.TextureLoader().load("/textures/background/si.jpg");
     var backMesh = new THREE.Mesh(
@@ -176,6 +178,7 @@ function inRange(ball, user, scene){
 function collision(ball, walls, ai, user) {
   var originPosition = ball.position.clone();
   var ceil = movement.max;
+  var multiplier = movement.multiplier;
   
 
 
@@ -204,9 +207,11 @@ function collision(ball, walls, ai, user) {
           posY *= -1;
           if(rand <= ceil){
             console.log("se caga");
-            pos_ai = ai.position.x * -1;
+            pos_ai = ai.position.x * (-1*multiplier);
+            veloDiv = 2;
           }else{
             pos_ai = ai.position.x;
+            veloDiv = 1;
           }
 
           
@@ -273,7 +278,7 @@ function angleBall(user, cpu, wall, ball){
 function aiMoves(ai, ball){
     
     //Retorna un número aleatorio entre min (incluido) y max (excluido)
-    ai.position.x = ball.position.x * movement.velocity;
+    ai.position.x = ball.position.x * (movement.velocity/veloDiv);
     //A donde vas a donde vas
     if(ai.position.x >= borderMax){
         ai.position.x = borderMax;
