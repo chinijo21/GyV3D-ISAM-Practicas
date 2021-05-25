@@ -1,4 +1,4 @@
-//Ball things
+//Ball init things
 var ballSpeed = 1;
 var maxSpeed = 1.5;
 var minSpeed = 0.75;
@@ -7,27 +7,28 @@ var posY = 0.25;
 var ballAngle = 1;
 var ballSize = 1;
 
+//Level init
+var movement;
+var rand;
+var veloDiv = 1;
+
 //Games starts when true
 var startGame = false;
 
-//Init position of players
+//Init players
 var pos_ai = 0;
 var pos_player = 0;
 
-//Borders long
+//Borders, player and ai lomg
 var longPlayer = 3;
 var borderMax = 6.5;
 
-//counter-strike
+//counter
 var userPoints = 0;
 var aiPoints = 0;
 var total = 0;
 var pasos = 0;
 var scoreBoard = 'AI: 0 - USER: 0 \n      VIDAS 5';
-
-var movement;
-var rand;
-var veloDiv = 1;
 
 function getBackground(){
     var backText = new THREE.TextureLoader().load("/textures/background/si.jpg");
@@ -49,6 +50,7 @@ function getBackground(){
 function texturizer(what){
     var texture;
     var image;
+
     switch(what){
         case 'floor':
             image = new THREE.TextureLoader().load("/textures/floor/concrete.jpg");
@@ -63,17 +65,18 @@ function texturizer(what){
             break;
 
         case 'user':
-          image = new THREE.TextureLoader().load("/textures/walls/user.jpg");
+            image = new THREE.TextureLoader().load("/textures/walls/user.jpg");
             break;
           
         case 'ai':
-          image = new THREE.TextureLoader().load("/textures/walls/ai.jpg");
+            image = new THREE.TextureLoader().load("/textures/walls/ai.jpg");
             break;
                 
         default:
             console.log("This object has no texture")
             break;
     }
+
     texture = new THREE.MeshPhysicalMaterial({map: image});
     texture.map.wrapS = texture.map.wrapT = THREE.RepeatWrapping;
     texture.side = THREE.DoubleSide;
@@ -83,16 +86,16 @@ function texturizer(what){
 
 function getLight(){
     var light = new THREE.DirectionalLight();
+
+    //Light settings
     light.position.set(5,-4,4);
     light.castShadow = true;
-
     light.shadow.camera.near = 0;
     light.shadow.camera.ai = 10;
     light.shadow.camera.bottom = -10;
     light.shadow.camera.left = -8;
     light.shadow.camera.right = 5;
     light.shadow.camera.far = 16;
-
     light.shadow.mapSize.width = 4096;
     light.shadow.mapSize.height = 4096;
 
@@ -109,8 +112,8 @@ function getFloor(floor){
 
 function getWall(which, x, y, z, posX, posY, posZ){
     var geometry = new THREE.BoxGeometry(x, y, z);
-    //var mesh;
-    //TODO: get some textures
+
+    //Depending of which wall we get here we give it his texture
     if(which == 'user'){
       var mesh = new THREE.Mesh(geometry, texturizer('user'));
     }else if(which == 'ai'){
@@ -137,6 +140,7 @@ function getBall(){
 }
 
 function ballMov(ball){
+    //Ball only moves when true
     if (startGame){
         ball.position.x += posX * ballSpeed * ballAngle;
         ball.position.y += posY * ballSpeed;
@@ -146,13 +150,12 @@ function ballMov(ball){
 function inRange(ball, user, scene){
     var up = -10;
     var down = 10;
-
+    //We get to 0 lifes so put it to false
     if(total==0){
       startGame = false;
       changeScore('score', scene);
     }
-    //Cant put a switch bc it wont work
-    //since my ball goes to fast :(
+    //would love this to be a switch 
     if(ball.position.y <= up){
       ball.position.x = 0;
       ball.position.y = 0;
@@ -180,9 +183,6 @@ function collision(ball, walls, ai, user) {
   var ceil = movement.max;
   var multiplier = movement.multiplier;
   
-
-
-  //!! https://github.com/stemkoski/stemkoski.github.com/blob/master/Three.js/Collision-Detection.html
   for (var vertexIndex = 0; vertexIndex < ball.geometry.vertices.length; vertexIndex++) {
     var localVertex = ball.geometry.vertices[vertexIndex].clone();
     var globalVertex = localVertex.applyMatrix4(ball.matrix);
@@ -191,28 +191,26 @@ function collision(ball, walls, ai, user) {
     var collisionResults = ray.intersectObjects(walls);
     if (collisionResults.length > 0 && collisionResults[0].distance < directionVector.length()) {
       switch(collisionResults[0].object.name){
-        //For some reason user= cpu and cpu = user
         case "ai":
           posY *= -1;
           pos_player = user.position.x;
-          speedBall(user, ai,'ai');
-          angleBall(user, ai, 'ai', ball);
           speedBall(user, ai,'user');
           angleBall(user, ai, 'user', ball);
 
           break;
         
         case "user":
-          console.log("ROBOT");
           posY *= -1;
           if(rand <= ceil){
-            console.log("se caga");
             pos_ai = ai.position.x * (-1*multiplier);
             veloDiv = 2;
           }else{
             pos_ai = ai.position.x;
             veloDiv = 1;
           }
+
+          speedBall(user, ai,'ai');
+          angleBall(user, ai, 'ai', ball);
 
           
           break;
@@ -227,6 +225,7 @@ function collision(ball, walls, ai, user) {
           
           break;
       }
+
       break;
     }
   }
@@ -254,7 +253,6 @@ function speedBall(user, cpu, wall){
 }
 
 function angleBall(user, cpu, wall, ball){
-  //-- Difference between position of racket and ball
   var distance;
   switch(wall){
     case 'ai':
@@ -267,22 +265,29 @@ function angleBall(user, cpu, wall, ball){
   }
   
   if(distance < minSpeed){
+
      ballAngle = minSpeed;
+
   }else if (distance > maxSpeed) {
+
      ballAngle = maxSpeed;
   }else{
+
      ballAngle = distance;
   }
 }
 
 function aiMoves(ai, ball){
-    
-    //Retorna un número aleatorio entre min (incluido) y max (excluido)
+    //Depending of the level velocity and his div changes
     ai.position.x = ball.position.x * (movement.velocity/veloDiv);
-    //A donde vas a donde vas
+
+    //Controls the position so it doesnt goes anywhere
     if(ai.position.x >= borderMax){
+
         ai.position.x = borderMax;
+
     }else if(ai.position.x <= -borderMax){
+
         ai.position.x = -borderMax;
     }
     
@@ -317,7 +322,7 @@ function init(){
 
     //Define camera + where to lookAt
     var cam = new THREE.PerspectiveCamera(90, sceneWidth/sceneHeight, 0.01, 100);
-    cam.position.set(0, -10, 15);
+    cam.position.set(0, -12, 15);
     cam.lookAt(scene.position);
 
     //Create renderer
