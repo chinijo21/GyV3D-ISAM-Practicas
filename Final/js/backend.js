@@ -7,8 +7,10 @@ var posY = 0.25;
 var ballAngle = 1;
 var ballSize = 1;
 
+
 //Level init
 var movement;
+var bText;
 var rand;
 var veloDiv = 1;
 
@@ -28,7 +30,7 @@ var userPoints = 0;
 var aiPoints = 0;
 var total = 0;
 var pasos = 0;
-var scoreBoard = 'AI: 0 - USER: 0 \n      VIDAS 5';
+
 
 function getBackground(){
     var backText = new THREE.TextureLoader().load("/textures/background/si.jpg");
@@ -48,35 +50,35 @@ function getBackground(){
 }
 
 function texturizer(what){
+    const loader = new THREE.TextureLoader();
     var texture;
     var image;
 
     switch(what){
         case 'floor':
-            image = new THREE.TextureLoader().load("/textures/floor/concrete.jpg");
+            image = loader.load("/textures/floor/concrete.jpg");
             break;
         
         case 'wall':
-            image = new THREE.TextureLoader().load("/textures/walls/wood.png");
+            image = loader.load("/textures/walls/wood.png");
             break;
 
         case 'ball':
-            image = new THREE.TextureLoader().load("/textures/ball/basket.jpg");
+            image = loader.load("/textures/ball/footbal.jpg")
             break;
 
         case 'user':
-            image = new THREE.TextureLoader().load("/textures/walls/user.jpg");
+            image = loader.load("/textures/walls/ai.jpg");
             break;
           
         case 'ai':
-            image = new THREE.TextureLoader().load("/textures/walls/ai.jpg");
+            image = loader.load("/textures/walls/user2.jpg");
             break;
                 
         default:
             console.log("This object has no texture")
             break;
     }
-
     texture = new THREE.MeshPhysicalMaterial({map: image});
     texture.map.wrapS = texture.map.wrapT = THREE.RepeatWrapping;
     texture.side = THREE.DoubleSide;
@@ -131,7 +133,7 @@ function getWall(which, x, y, z, posX, posY, posZ){
 
 function getBall(){
     var geometry = new THREE.SphereGeometry(ballSize, 20, 20);
-    var mesh = new THREE.Mesh(geometry, texturizer('ball'));
+    var mesh = new THREE.Mesh(geometry,texturizer('ball'));
     mesh.position.z = 1;
     mesh.castShadow = true;
     mesh.name = "ball"
@@ -211,7 +213,6 @@ function collision(ball, walls, ai, user) {
 
           speedBall(user, ai,'ai');
           angleBall(user, ai, 'ai', ball);
-
           
           break;
 
@@ -357,6 +358,7 @@ function init(){
     var floor = getFloor("floor");
     
     //get ball
+    
     var ball = getBall();
 
     //Add all of them
@@ -406,8 +408,6 @@ function init(){
   animate(walls, ball, scene, cam, renderer);
   changeScore('score', scene);
 }
-
-
 
   
   

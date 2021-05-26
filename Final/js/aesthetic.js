@@ -1,3 +1,4 @@
+//Get all the things that the user inputs.
 function dificulty(){
     var velocity;
     var max;
@@ -57,12 +58,13 @@ function changeScore(who, scene){
     });
 }
 
+//Sensibility of keys
 function getSens(){
   var sens = document.getElementById("sen").value;
   return sens;
 }
 
 function getLifes(){
-  var lifes = document.getElementById("lifes").value
+  var lifes = document.getElementById("lifes").value;
   return lifes;
 }
