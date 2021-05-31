@@ -7,7 +7,6 @@ var posY = 0.25;
 var ballAngle = 1;
 var ballSize = 1;
 
-
 //Level init
 var movement;
 var bText;
