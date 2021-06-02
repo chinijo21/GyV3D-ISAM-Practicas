@@ -196,7 +196,7 @@ function collision(ball, walls, ai, user) {
           posY *= -1;
           pos_player = user.position.x;
           speedBall(user, ai,'user');
-          angleBall('user', ball);
+          angleBall(user, ai, 'user', ball);
 
           break;
         
@@ -211,7 +211,7 @@ function collision(ball, walls, ai, user) {
           }
 
           speedBall(user, ai,'ai');
-          angleBall('ai', ball);
+          angleBall(user, ai, 'ai', ball);
           
           break;
 
@@ -232,11 +232,11 @@ function collision(ball, walls, ai, user) {
 }
 
 //Funcionamiento avanzado
-function speedBall(user, cpu, wall){
+function speedBall(user, ai, wall){
   var diff;
   switch(wall){
     case 'ai':
-      diff = Math.abs(pos_ai - cpu.position.x);
+      diff = Math.abs(pos_ai - ai.position.x);
       break;
     
     case 'user':
@@ -253,16 +253,16 @@ function speedBall(user, cpu, wall){
   }
 }
 
-function angleBall(wall, ball){
+function angleBall(user, ai, wall, ball){
   var distance;
   //Calculamos la distancia
   switch(wall){
     case 'ai':
-      distance = Math.abs(pos_ai - ball.position.x);
+      distance = Math.abs(ai.position.x - ball.position.x);
       break;
     
     case 'user':
-      distance = Math.abs(pos_player - ball.position.x);
+      distance = Math.abs(user.position.x - ball.position.x);
       break;
   }
   
@@ -307,7 +307,7 @@ function animate(walls, ball, scene, cam, renderer){
     //ball movement
     ballMov(ball);
 
-    //cpu movement
+    //ai movement
     aiMoves(walls[1], ball);
 
     renderer.render(scene, cam);
