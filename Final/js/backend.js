@@ -1,7 +1,7 @@
 //Ball init things
 var ballSpeed = 1;
 var maxSpeed = 1.5;
-var minSpeed = 0.75;
+var minSpeed = 0.69;
 var posX = 0.15;
 var posY = 0.25;
 var ballAngle = 1;
@@ -196,7 +196,7 @@ function collision(ball, walls, ai, user) {
           posY *= -1;
           pos_player = user.position.x;
           speedBall(user, ai,'user');
-          angleBall(user, ai, 'user', ball);
+          angleBall('user', ball);
 
           break;
         
@@ -211,7 +211,7 @@ function collision(ball, walls, ai, user) {
           }
 
           speedBall(user, ai,'ai');
-          angleBall(user, ai, 'ai', ball);
+          angleBall('ai', ball);
           
           break;
 
@@ -231,6 +231,7 @@ function collision(ball, walls, ai, user) {
   }
 }
 
+//Funcionamiento avanzado
 function speedBall(user, cpu, wall){
   var diff;
   switch(wall){
@@ -242,28 +243,30 @@ function speedBall(user, cpu, wall){
       diff = Math.abs(pos_player - user.position.x);
       break;
   }
-  
-  if(diff < minSpeed){
-    ballSpeed = minSpeed;
-  }else if (diff > maxSpeed) {
+
+  if(diff > maxSpeed){
     ballSpeed = maxSpeed;
+  }else if(diff < minSpeed){
+    ballSpeed = minSpeed;
   }else{
     ballSpeed = diff;
   }
 }
 
-function angleBall(user, cpu, wall, ball){
+function angleBall(wall, ball){
   var distance;
+  //Calculamos la distancia
   switch(wall){
     case 'ai':
-      distance = Math.abs(cpu.position.x - ball.position.x);
+      distance = Math.abs(pos_ai - ball.position.x);
       break;
     
     case 'user':
-      distance = Math.abs(user.position.x - ball.position.x);
+      distance = Math.abs(pos_player - ball.position.x);
       break;
   }
   
+  //Dependiendo de la distancia, la pelota coge una velocidad minima o una máxima
   if(distance < minSpeed){
 
      ballAngle = minSpeed;

@@ -1,4 +1,5 @@
 //Get all the things that the user inputs.
+//MEJORAS dificultad
 function dificulty(){
     var velocity;
     var max;
@@ -26,7 +27,11 @@ function dificulty(){
     }
     return {velocity, max, multiplier};
 }
-
+function getLifes(){
+  var lifes = document.getElementById("lifes").value;
+  return lifes;
+}
+//Mejoras TEXTO3D
 function changeScore(who, scene){
     scoreBoard = (`AI: ${aiPoints} - USER: ${userPoints} \n     VIDAS ${total} `);
     var fonts = new THREE.FontLoader();
@@ -57,14 +62,10 @@ function changeScore(who, scene){
       scene.add(text);
     });
 }
-
-//Sensibility of keys
+// Mejoras Sensibility of keys
 function getSens(){
   var sens = document.getElementById("sen").value;
   return sens;
 }
 
-function getLifes(){
-  var lifes = document.getElementById("lifes").value;
-  return lifes;
-}
+
